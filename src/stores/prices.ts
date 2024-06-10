@@ -25,7 +25,7 @@ export const usePricesStore = defineStore('prices', () => {
 
   async function fetchPrices() {
     try {
-      const response = await fetch('https://app.age-of-farm.site/api/floor?token=FFGrIZyIsxIl17TaIxlBKHp7ZEZ55g');
+      const response = await fetch('https://app.age-of-farm.site/api/floor?token=123');
       const data = await response.json();
       if (data.WOOD) prices.value.wood = data.WOOD;
       if (data.FOOD) prices.value.food = data.FOOD;
