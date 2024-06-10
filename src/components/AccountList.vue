@@ -24,8 +24,8 @@
                 </td>
                 <td>
                   {{ fn(tool.profit * 24) }}
-                  <img :src="'/farm-world-space-calculator/img/' + String(tool.resource).toLowerCase() + '.png'"
-                    width="20px" class="mb-1" />
+                  <img :src="'/age-of-farm-calculator/img/' + String(tool.resource).toLowerCase() + '.png'" width="20px"
+                    class="mb-1" />
                 </td>
                 <td>
                   <div v-if="tool.energy > 0" class="tool-costs-row">
@@ -52,7 +52,7 @@
                   <div v-for="(amount, resource) in summariesStore.getAccountResourcesSummary(account.id)"
                     :key="resource" class="tool-costs-row">
                     {{ fn(amount) }}
-                    <img :src="'/farm-world-space-calculator/img/' + resource + '.png'" width="20px" class="mb-1" />
+                    <img :src="'/age-of-farm-calculator/img/' + resource + '.png'" width="20px" class="mb-1" />
                   </div>
                 </td>
                 <td>
@@ -60,7 +60,7 @@
                     :key="resource">
                     <div v-if="amount > 0" class="tool-costs-row">
                       {{ fn(amount) }}
-                      <img :src="'/farm-world-space-calculator/img/' + resource + '.png'" width="20px" class="mb-1" />
+                      <img :src="'/age-of-farm-calculator/img/' + resource + '.png'" width="20px" class="mb-1" />
                     </div>
                   </template>
                 </td>
@@ -70,7 +70,7 @@
                 <td>
                   {{ $t('roi') }}: <span class="badge grey darken-2 sm ml-1">{{
                     summariesStore.getAccountROI(account.id).toFixed(1)
-                    }}</span>
+                  }}</span>
                   {{ $t('days') }}
                 </td>
               </tr>
@@ -91,13 +91,13 @@
                 </tr>
                 <tr v-for="buff in buffsStore.buffs" :key="buff.name" class="tool-row">
                   <td class="text-left pl-2">
-                    <img :src="'/farm-world-space-calculator/img/' + buff.name + '.png'" width="20px" class="mb-1" />
+                    <img :src="'/age-of-farm-calculator/img/' + buff.name + '.png'" width="20px" class="mb-1" />
                     {{ $t(buff.name) }}
                   </td>
                   <td>
                     <div v-for="(amount, resource) in buff.cost" :key="resource" class="tool-costs-row">
                       {{ amount }}
-                      <img :src="'/farm-world-space-calculator/img/' + resource + '.png'" width="20px" class="mb-1" />
+                      <img :src="'/age-of-farm-calculator/img/' + resource + '.png'" width="20px" class="mb-1" />
                     </div>
                   </td>
                   <td>

@@ -33,7 +33,7 @@
               <div v-for="resource in resources" :key="resource" class="icon-resource-select-row" :class="{
                 'icon-resource-select-row--active': selectedResource === resource
               }" @click="selectedResource = resource">
-                <img :src="`/farm-world-space-calculator/img/${resource}.png`" class="icon-resource-select-img">
+                <img :src="`/age-of-farm-calculator/img/${resource}.png`" class="icon-resource-select-img">
                 <div class="icon-resource-select-resource">
                   {{ $t(resource) }}
                 </div>

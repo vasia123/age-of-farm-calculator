@@ -9,7 +9,7 @@
               <div class="text-center">
                 <div class="chip gradbg-dark-grey shd mb-0 waves-effect resources-big">
                   <div class="mt-2 ml-2">
-                    <img :src="'/farm-world-space-calculator/img/' + String(resource).toLowerCase() + '.png'">
+                    <img :src="'/age-of-farm-calculator/img/' + String(resource).toLowerCase() + '.png'">
                     <span class="badge darken-3 md no-shadow">
                       {{ formatNumber(pricesStore.getResourcePrice(resource)) }} <i class="ton-icon"></i>
                       <span class="badge ssm" :class="{

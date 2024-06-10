@@ -42,7 +42,7 @@ export const useChartStore = defineStore('chart', () => {
       }
     }
 
-    const url = `https://vasia123.github.io/farm-world-space-prices/${year}-${month}/${day}.json`;
+    const url = `https://vasia123.github.io/age-of-farm-prices/${year}-${month}/${day}.json`;
     try {
       const response = await fetch(url);
       if (!response.ok) {

@@ -4,7 +4,7 @@ import VueDevTools from 'vite-plugin-vue-devtools';
 import path from 'path';
 
 export default defineConfig({
-  base: '/farm-world-space-calculator/',
+  base: '/age-of-farm-calculator/',
   plugins: [vue(), VueDevTools()],
   resolve: {
     alias: {
