@@ -33,10 +33,17 @@ export const useSummariesStore = defineStore('summaries', () => {
   function getAccountProfitSummary(accountId: number): number {
     const account = accountsStore.accounts.find(acc => acc.id === accountId);
     if (!account) return 0;
-    const toolsDailyProfit = account.tools.reduce((sum, tool) => sum + toolsStore.getToolDailyProfit(tool), 0);
+    const toolsDailyProfit = account.tools.reduce((sum, tool) => {
+      const grossProfit = toolsStore.getToolDailyProfit(tool);
+      const energyCost = tool.energy / tool.cooldown * 24 * pricesStore.getResourcePrice('food') / 5;
+      const repairCost = tool.durability / tool.cooldown * 24 * (pricesStore.getResourcePrice('wood') + pricesStore.getResourcePrice('stone')) / 5;
+      const netProfit = grossProfit - energyCost - repairCost;
+      return sum + netProfit;
+    }, 0);
 
     return toolsDailyProfit;
   }
+
 
   function getAccountConsumptionSummary(accountId: number): { [key in ResourceType]: number } {
     const consumptionSummary: { [key in ResourceType]: number } = {
@@ -59,7 +66,13 @@ export const useSummariesStore = defineStore('summaries', () => {
   function getAllProfitSummary(): number {
     return accountsStore.accounts.reduce(
       (fullSum, account) => {
-        const toolsDailyProfit = account.tools.reduce((sum, tool) => sum + toolsStore.getToolDailyProfit(tool), 0);
+        const toolsDailyProfit = account.tools.reduce((sum, tool) => {
+          const grossProfit = toolsStore.getToolDailyProfit(tool);
+          const energyCost = tool.energy / tool.cooldown * 24 * pricesStore.getResourcePrice('food') / 5;
+          const repairCost = tool.durability / tool.cooldown * 24 * (pricesStore.getResourcePrice('wood') + pricesStore.getResourcePrice('stone')) / 5;
+          const netProfit = grossProfit - energyCost - repairCost;
+          return sum + netProfit;
+        }, 0);
         return fullSum + toolsDailyProfit;
       },
       0
