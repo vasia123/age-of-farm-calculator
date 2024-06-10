@@ -26,7 +26,6 @@
                 FOOD: chartStore.foodData,
                 STONE: chartStore.stoneData,
                 WOOD: chartStore.woodData,
-                STONE: chartStore.StoneData,
               }" />
             </div>
           </div>
