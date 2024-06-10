@@ -1,0 +1,12 @@
+@import './bootstrap.min.css';
+@import './mdb.css';
+@import './vvcrm.css';
+@import './custom.css';
+
+body {
+  color: #fff;
+}
+
+.no-wrap {
+  white-space: nowrap;
+}
