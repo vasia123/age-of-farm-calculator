@@ -30,10 +30,7 @@ export const useSummariesStore = defineStore('summaries', () => {
     const account = accountsStore.accounts.find(acc => acc.id === accountId);
     if (!account) return 0;
     const toolsDailyProfit = account.tools.reduce((sum, tool) => {
-      const grossProfit = toolsStore.getToolDailyProfit(tool);
-      const energyCost = toolsStore.getToolEnergyCost(tool) * 24;
-      const repairCost = toolsStore.getToolDurabilityCost(tool) * 24;
-      const netProfit = grossProfit - energyCost - repairCost;
+      const netProfit = toolsStore.getToolDailyProfit(tool);
       return sum + netProfit;
     }, 0);
 
@@ -57,6 +54,20 @@ export const useSummariesStore = defineStore('summaries', () => {
       consumptionSummary.wood += tool.repair.wood / tool.cooldown * 24;
     });
 
+    const profitSummary = getAccountResourcesSummary(accountId)
+    if (profitSummary.wood) {
+      consumptionSummary.wood -= profitSummary.wood;
+      if (consumptionSummary.wood < 0) consumptionSummary.wood = 0;
+    }
+    if (profitSummary.food) {
+      consumptionSummary.food -= profitSummary.food;
+      if (consumptionSummary.food < 0) consumptionSummary.food = 0;
+    }
+    if (profitSummary.stone) {
+      consumptionSummary.stone -= profitSummary.stone;
+      if (consumptionSummary.stone < 0) consumptionSummary.stone = 0;
+    }
+
     return consumptionSummary;
   }
 
@@ -65,8 +76,8 @@ export const useSummariesStore = defineStore('summaries', () => {
       (fullSum, account) => {
         const toolsDailyProfit = account.tools.reduce((sum, tool) => {
           const grossProfit = toolsStore.getToolDailyProfit(tool);
-          const energyCost = toolsStore.getToolEnergyCost(tool) * 24;
-          const repairCost = toolsStore.getToolDurabilityCost(tool) * 24;
+          const energyCost = toolsStore.getToolOneUseEnergyCost(tool) * 24;
+          const repairCost = toolsStore.getToolOneUseDurabilityCost(tool) * 24;
           const netProfit = grossProfit - energyCost - repairCost;
           return sum + netProfit;
         }, 0);

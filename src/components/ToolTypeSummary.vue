@@ -1,7 +1,7 @@
 <template>
   <div class="tool-type-summary">
     <div class="resources-container">
-      <div v-for="(toolsOfType, resource) in toolTypes" :key="resource"
+      <div v-for="(toolsByType, resource) in toolTypes" :key="resource"
         class="col-lg-4 col-md-6 col-sm-12 mb-4 text-center resource-item">
         <div class="card card-cascade wider">
           <div class="view view-cascade grey darken-3">
@@ -22,7 +22,7 @@
                   </div>
                 </div>
               </div>
-              <div class="d-block mt-4" v-for="tool in toolsOfType" :key="tool.name">
+              <div class="d-block mt-4" v-for="tool in toolsByType" :key="tool.name">
                 <div class="d-inline-block w-50 b-atomic">
                   <div class="d-inline-block w-25 flex-right">
                     <img :src="tool.icon" :alt="tool.name" class="img-fluid ml-2">
@@ -104,6 +104,6 @@ const { t: $t } = useI18n();
 const toolsStore = useToolsStore();
 const pricesStore = usePricesStore();
 
-const toolTypes = computed(() => toolsStore.toolTypes);
+const toolTypes = computed(() => toolsStore.toolsByType);
 const prices = computed(() => pricesStore.prices);
 </script>

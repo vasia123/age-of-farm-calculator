@@ -4,22 +4,22 @@ import { usePricesStore } from './prices';
 
 export const useToolsStore = defineStore('tools', () => {
   const tools: Tool[] = [
-    {
-      name: 'Axe (Promo)',
-      icon: 'img/axe_promo.png',
-      profit: 0.2,
-      craft: {
-        wood: 0,
-        stone: 0,
-      },
-      cooldown: 1,
-      resource: 'wood',
-      energy: 1,
-      repair: {
-        wood: 0.05,
-        stone: 0.05,
-      },
-    },
+    // {
+    //   name: 'Axe (Promo)',
+    //   icon: 'img/axe_promo.png',
+    //   profit: 0.2,
+    //   craft: {
+    //     wood: 0,
+    //     stone: 0,
+    //   },
+    //   cooldown: 1,
+    //   resource: 'wood',
+    //   energy: 1,
+    //   repair: {
+    //     wood: 0.05,
+    //     stone: 0.05,
+    //   },
+    // },
     {
       name: 'Axe (Common)',
       icon: 'img/axe_common.png',
@@ -100,6 +100,22 @@ export const useToolsStore = defineStore('tools', () => {
         stone: 45,
       },
     },
+    // {
+    //   name: 'Pickaxe (Promo)',
+    //   icon: 'img/pickaxe_promo.png',
+    //   profit: 0.2,
+    //   craft: {
+    //     wood: 0,
+    //     stone: 0,
+    //   },
+    //   cooldown: 1,
+    //   resource: 'stone',
+    //   energy: 1,
+    //   repair: {
+    //     wood: 0.05,
+    //     stone: 0.05,
+    //   },
+    // },
     {
       name: 'Pickaxe (Common)',
       icon: 'img/pickaxe_common.png',
@@ -272,7 +288,7 @@ export const useToolsStore = defineStore('tools', () => {
     }
     types[tool.resource].push(tool);
   }
-  const toolTypes = types;
+  const toolsByType = types;
 
   const pricesStore = usePricesStore();
 
@@ -280,18 +296,18 @@ export const useToolsStore = defineStore('tools', () => {
     return tool.craft.wood * pricesStore.prices.wood + tool.craft.stone * pricesStore.prices.stone;
   }
 
-  function getToolEnergyCost(tool: Tool): number {
+  function getToolOneUseEnergyCost(tool: Tool): number {
     return tool.energy / 5 * pricesStore.prices.food;
   }
 
-  function getToolDurabilityCost(tool: Tool): number {
+  function getToolOneUseDurabilityCost(tool: Tool): number {
     return tool.repair.wood * pricesStore.prices.wood + tool.repair.stone * pricesStore.prices.stone;
   }
 
   function getToolHourlyProfit(tool: Tool): number {
     const grossProfit = tool.profit * pricesStore.getResourcePrice(tool.resource);
-    const energyCost = getToolEnergyCost(tool);
-    const durabilityCost = getToolDurabilityCost(tool);
+    const energyCost = getToolOneUseEnergyCost(tool);
+    const durabilityCost = getToolOneUseDurabilityCost(tool);
     const netProfit = (grossProfit - energyCost - durabilityCost) / tool.cooldown;
     return netProfit;
   }
@@ -309,10 +325,10 @@ export const useToolsStore = defineStore('tools', () => {
 
   return {
     tools,
-    toolTypes,
+    toolsByType,
     getToolCraftCost,
-    getToolEnergyCost,
-    getToolDurabilityCost,
+    getToolOneUseEnergyCost,
+    getToolOneUseDurabilityCost,
     getToolHourlyProfit,
     getToolDailyProfit,
     getToolROI,

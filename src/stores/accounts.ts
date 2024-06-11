@@ -52,12 +52,12 @@ export const useAccountsStore = defineStore('accounts', () => {
       if (rawAccounts) {
         accounts.value = [];
         rawAccounts.forEach(account => {
-          const toolsRaw: Array<CraftedTool | undefined> = account.tools?.map(tool => {
-            const toolFound = toolsStore.tools.find(tool => tool.name === account.name)
+          const toolsRaw: Array<CraftedTool | undefined> = account.tools?.map(accountTool => {
+            const toolFound = toolsStore.tools.find(tool => tool.name === accountTool.name)
             if (!toolFound) return undefined
             return {
               ...toolFound,
-              craftPrice: tool.craftPrice,
+              craftPrice: accountTool.craftPrice,
             };
           });
           accounts.value.push({
