@@ -8,6 +8,7 @@ export interface Tool {
     craft: {
         wood: number;
         stone: number;
+        [key: string]: number;
     };
     cooldown: number;
     resource: ResourceType;

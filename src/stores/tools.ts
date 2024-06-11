@@ -41,8 +41,9 @@ export const useToolsStore = defineStore('tools', () => {
       icon: 'img/axe_uncommon.png',
       profit: 11,
       craft: {
-        wood: 1430,
-        stone: 2010,
+        'Axe (Common)': 1,
+        wood: 930,
+        stone: 1340,
       },
       cooldown: 1,
       resource: 'wood',
@@ -57,8 +58,9 @@ export const useToolsStore = defineStore('tools', () => {
       icon: 'img/axe_rare.png',
       profit: 24,
       craft: {
-        wood: 3180,
-        stone: 4650,
+        'Axe (Uncommon)': 1,
+        wood: 1750,
+        stone: 2640,
       },
       cooldown: 1,
       resource: 'wood',
@@ -73,8 +75,9 @@ export const useToolsStore = defineStore('tools', () => {
       icon: 'img/axe_epic.png',
       profit: 53,
       craft: {
-        wood: 6930,
-        stone: 9970,
+        'Axe (Rare)': 1,
+        wood: 3750,
+        stone: 5320,
       },
       cooldown: 1,
       resource: 'wood',
@@ -89,8 +92,9 @@ export const useToolsStore = defineStore('tools', () => {
       icon: 'img/axe_legendary.png',
       profit: 118,
       craft: {
-        wood: 14680,
-        stone: 20650,
+        'Axe (Epic)': 1,
+        wood: 7750,
+        stone: 10680,
       },
       cooldown: 1,
       resource: 'wood',
@@ -137,8 +141,9 @@ export const useToolsStore = defineStore('tools', () => {
       icon: 'img/pickaxe_uncommon.png',
       profit: 11,
       craft: {
-        wood: 1950,
-        stone: 1470,
+        'Pickaxe (Common)': 1,
+        wood: 1300,
+        stone: 970,
       },
       cooldown: 1,
       resource: 'stone',
@@ -153,8 +158,9 @@ export const useToolsStore = defineStore('tools', () => {
       icon: 'img/pickaxe_rare.png',
       profit: 24,
       craft: {
-        wood: 4550,
-        stone: 3360,
+        'Pickaxe (Uncommon)': 1,
+        wood: 2600,
+        stone: 1890,
       },
       cooldown: 1,
       resource: 'stone',
@@ -169,8 +175,9 @@ export const useToolsStore = defineStore('tools', () => {
       icon: 'img/pickaxe_epic.png',
       profit: 53,
       craft: {
-        wood: 9750,
-        stone: 7250,
+        'Pickaxe (Rare)': 1,
+        wood: 5200,
+        stone: 3890,
       },
       cooldown: 1,
       resource: 'stone',
@@ -185,8 +192,9 @@ export const useToolsStore = defineStore('tools', () => {
       icon: 'img/pickaxe_legendary.png',
       profit: 118,
       craft: {
-        wood: 20150,
-        stone: 15140,
+        'Pickaxe (Epic)': 1,
+        wood: 10400,
+        stone: 7890,
       },
       cooldown: 1,
       resource: 'stone',
@@ -196,7 +204,6 @@ export const useToolsStore = defineStore('tools', () => {
         stone: 16,
       },
     },
-
     {
       name: 'Spear (Common)',
       icon: 'img/spear_common.png',
@@ -218,8 +225,9 @@ export const useToolsStore = defineStore('tools', () => {
       icon: 'img/spear_uncommon.png',
       profit: 8,
       craft: {
-        wood: 1740,
-        stone: 1690,
+        'Spear (Common)': 1,
+        wood: 1160,
+        stone: 1110,
       },
       cooldown: 1,
       resource: 'food',
@@ -234,8 +242,9 @@ export const useToolsStore = defineStore('tools', () => {
       icon: 'img/spear_rare.png',
       profit: 19,
       craft: {
-        wood: 3960,
-        stone: 3860,
+        'Spear (Uncommon)': 1,
+        wood: 2220,
+        stone: 2170,
       },
       cooldown: 1,
       resource: 'food',
@@ -250,8 +259,9 @@ export const useToolsStore = defineStore('tools', () => {
       icon: 'img/spear_epic.png',
       profit: 39,
       craft: {
-        wood: 8300,
-        stone: 8150,
+        'Spear (Rare)': 1,
+        wood: 4340,
+        stone: 4290,
       },
       cooldown: 1,
       resource: 'food',
@@ -266,8 +276,9 @@ export const useToolsStore = defineStore('tools', () => {
       icon: 'img/spear_legendary.png',
       profit: 92,
       craft: {
-        wood: 16880,
-        stone: 16680,
+        'Spear (Epic)': 1,
+        wood: 8580,
+        stone: 8530,
       },
       cooldown: 1,
       resource: 'food',
@@ -294,11 +305,47 @@ export const useToolsStore = defineStore('tools', () => {
   const pricesStore = usePricesStore();
 
   function getToolCraftCost(tool: Tool): number {
-    return tool.craft.wood * pricesStore.prices.wood + tool.craft.stone * pricesStore.prices.stone;
+    return Object.keys(tool.craft).reduce(
+      (sum, resourceOrTool) => {
+        if (Object.keys(pricesStore.prices).includes(resourceOrTool)) {
+          const resourceCost = pricesStore.getResourcePrice(resourceOrTool as ResourceType)
+          return tool.craft[resourceOrTool] * resourceCost + sum
+        } else {
+          const foundTool = tools.find(t => t.name === resourceOrTool)
+          if (!foundTool) {
+            return sum
+          }
+          return tool.craft[resourceOrTool] * getToolCraftCost(foundTool) + sum
+        }
+      },
+      0
+    )
   }
 
-  function getToolOneUseEnergyCost(tool: Tool): number {
-    return tool.energy / 5 * pricesStore.prices.food;
+  function getToolCraftResources(tool: Tool) {
+    return Object.keys(tool.craft).map(resourceOrTool => {
+      if (Object.keys(pricesStore.prices).includes(resourceOrTool)) {
+        const resource = resourceOrTool as ResourceType
+        return {
+          icon: `img/${resource}.png`,
+          count: tool.craft[resource],
+          cost: tool.craft[resource] * pricesStore.getResourcePrice(resource)
+        }
+      }
+      const foundTool = tools.find(t => t.name === resourceOrTool)
+      if (!foundTool) {
+        return {
+          icon: ``,
+          count: 0,
+          cost: 0
+        }
+      }
+      return {
+        icon: foundTool.icon,
+        count: tool.craft[resourceOrTool] === 1 ? 0 : tool.craft[resourceOrTool],
+        cost: getToolCraftCost(foundTool)
+      }
+    })
   }
 
   function getToolOneUseDurabilityCost(tool: Tool): number {
@@ -311,6 +358,9 @@ export const useToolsStore = defineStore('tools', () => {
     const durabilityCost = getToolOneUseDurabilityCost(tool);
     const netProfit = (grossProfit - energyCost - durabilityCost) / tool.cooldown;
     return netProfit;
+  }
+  function getToolOneUseEnergyCost(tool: Tool): number {
+    return tool.energy / 5 * pricesStore.prices.food;
   }
 
   function getToolDailyProfit(tool: Tool) {
@@ -328,6 +378,7 @@ export const useToolsStore = defineStore('tools', () => {
     tools,
     toolsByType,
     getToolCraftCost,
+    getToolCraftResources,
     getToolOneUseEnergyCost,
     getToolOneUseDurabilityCost,
     getToolHourlyProfit,
