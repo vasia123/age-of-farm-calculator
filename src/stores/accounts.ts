@@ -42,11 +42,11 @@ export const useAccountsStore = defineStore('accounts', () => {
       name: acc.name,
       tools: acc.tools.map(tool => ({ name: tool.name, craftPrice: tool.craftPrice }))
     }))
-    localStorage.setItem('accounts', JSON.stringify(zipAccounts));
+    localStorage.setItem('accounts-age-of-farm', JSON.stringify(zipAccounts));
   }
 
   function loadAccounts() {
-    const storedAccounts = localStorage.getItem('accounts');
+    const storedAccounts = localStorage.getItem('accounts-age-of-farm');
     if (storedAccounts) {
       const rawAccounts: StoredAccount[] | undefined = JSON.parse(storedAccounts);
       if (rawAccounts) {
