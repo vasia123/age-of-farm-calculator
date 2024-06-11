@@ -1,15 +1,11 @@
 import { defineStore } from 'pinia';
 import { useAccountsStore } from './accounts';
 import { useToolsStore } from './tools';
-import { useBuffsStore } from './buffs';
-import { usePricesStore } from './prices';
-import type { Buff, ResourceType } from '@/types/main';
+import type { ResourceType } from '@/types/main';
 
 export const useSummariesStore = defineStore('summaries', () => {
   const accountsStore = useAccountsStore();
   const toolsStore = useToolsStore();
-  const buffsStore = useBuffsStore();
-  const pricesStore = usePricesStore();
 
   function getAccountResourcesSummary(accountId: number): Record<string, number> {
     const account = accountsStore.accounts.find(acc => acc.id === accountId);
@@ -30,13 +26,13 @@ export const useSummariesStore = defineStore('summaries', () => {
     return resourceSummary;
   }
 
-  function getAccountProfitSummary(accountId: number): number {
+  function getAccountDailyProfitSummary(accountId: number): number {
     const account = accountsStore.accounts.find(acc => acc.id === accountId);
     if (!account) return 0;
     const toolsDailyProfit = account.tools.reduce((sum, tool) => {
       const grossProfit = toolsStore.getToolDailyProfit(tool);
-      const energyCost = tool.energy / tool.cooldown * 24 * pricesStore.getResourcePrice('food') / 5;
-      const repairCost = tool.durability / tool.cooldown * 24 * (pricesStore.getResourcePrice('wood') + pricesStore.getResourcePrice('stone')) / 5;
+      const energyCost = toolsStore.getToolEnergyCost(tool) * 24;
+      const repairCost = toolsStore.getToolDurabilityCost(tool) * 24;
       const netProfit = grossProfit - energyCost - repairCost;
       return sum + netProfit;
     }, 0);
@@ -45,7 +41,7 @@ export const useSummariesStore = defineStore('summaries', () => {
   }
 
 
-  function getAccountConsumptionSummary(accountId: number): { [key in ResourceType]: number } {
+  function getAccountDailyConsumptionSummary(accountId: number): { [key in ResourceType]: number } {
     const consumptionSummary: { [key in ResourceType]: number } = {
       food: 0,
       stone: 0,
@@ -57,7 +53,8 @@ export const useSummariesStore = defineStore('summaries', () => {
 
     account.tools.forEach(tool => {
       consumptionSummary.food += tool.energy / tool.cooldown * 24 / 5;
-      consumptionSummary.stone += tool.durability / tool.cooldown * 24 / 5;
+      consumptionSummary.stone += tool.repair.stone / tool.cooldown * 24;
+      consumptionSummary.wood += tool.repair.wood / tool.cooldown * 24;
     });
 
     return consumptionSummary;
@@ -68,8 +65,8 @@ export const useSummariesStore = defineStore('summaries', () => {
       (fullSum, account) => {
         const toolsDailyProfit = account.tools.reduce((sum, tool) => {
           const grossProfit = toolsStore.getToolDailyProfit(tool);
-          const energyCost = tool.energy / tool.cooldown * 24 * pricesStore.getResourcePrice('food') / 5;
-          const repairCost = tool.durability / tool.cooldown * 24 * (pricesStore.getResourcePrice('wood') + pricesStore.getResourcePrice('stone')) / 5;
+          const energyCost = toolsStore.getToolEnergyCost(tool) * 24;
+          const repairCost = toolsStore.getToolDurabilityCost(tool) * 24;
           const netProfit = grossProfit - energyCost - repairCost;
           return sum + netProfit;
         }, 0);
@@ -94,42 +91,18 @@ export const useSummariesStore = defineStore('summaries', () => {
     const account = accountsStore.accounts.find(acc => acc.id === accountId);
     if (!account) return 0;
 
-    const totalProfit = getAccountProfitSummary(accountId);
+    const totalProfit = getAccountDailyProfitSummary(accountId);
     if (totalProfit === 0) return 0;
     const toolsCraftPrice = account.tools.reduce((acc, tool) => acc + tool.craftPrice, 0)
     return (toolsCraftPrice) / totalProfit;
   }
 
-  function getAccountBuffROI(accountId: number, buff: Buff): number {
-    const account = accountsStore.accounts.find(acc => acc.id === accountId);
-    if (!account) return 0;
-    const buffData = buffsStore.buffs.find(b => b.name === buff.name);
-    if (!buffData) throw new Error("no buff data!");
-
-    const buffCost = Object.entries(buffData.cost).reduce((total, [resource, amount]) => {
-      const tonTotal = resource === 'ton'
-        ? amount
-        : amount * pricesStore.getResourcePrice(resource as ResourceType)
-      return total + tonTotal;
-    }, 0);
-
-    const originalProfit = getAccountProfitSummary(accountId);
-    const updatedTools = account.tools.map(tool => buffsStore.applyBuffToTool(tool, buff));
-    const updatedProfit = updatedTools.reduce((total, tool) => total + toolsStore.getToolDailyProfit(tool), 0);
-
-    const profitIncrease = updatedProfit - originalProfit;
-    const roiDays = buffCost / profitIncrease;
-
-    return roiDays;
-  }
-
   return {
     getAccountResourcesSummary,
-    getAccountProfitSummary,
-    getAccountConsumptionSummary,
+    getAccountDailyProfitSummary,
+    getAccountDailyConsumptionSummary,
     getAllProfitSummary,
     getFullAccountROI,
     getAccountROI,
-    getAccountBuffROI,
   };
 });

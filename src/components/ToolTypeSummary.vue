@@ -50,25 +50,25 @@
                   </div>
                 </div>
                 <div class="d-inline-block w-50 b-alcor">
-                  <div class="d-block fw_craft" v-if="tool.wood > 0">
+                  <div class="d-block fw_craft" v-if="tool.craft.wood > 0">
                     <div class="d-inline-block w-50 text-right">
-                      <span class="badge ssm no-shadow">{{ tool.wood }}</span>
+                      <span class="badge ssm no-shadow">{{ tool.craft.wood }}</span>
                       <img src="/img/wood.png" style="height: 16px;">
                     </div>
                     <div class="d-inline-block w-50 text-right">
                       <span class="badge ssm no-shadow">
-                        {{ formatNumber(tool.wood * prices.wood) }}<i class="ton-icon"></i>
+                        {{ formatNumber(tool.craft.wood * prices.wood) }}<i class="ton-icon"></i>
                       </span>
                     </div>
                   </div>
-                  <div class="d-block fw_craft" v-if="tool.stone > 0">
+                  <div class="d-block fw_craft" v-if="tool.craft.stone > 0">
                     <div class="d-inline-block w-50 text-right">
-                      <span class="badge ssm no-shadow">{{ tool.stone }}</span>
+                      <span class="badge ssm no-shadow">{{ tool.craft.stone }}</span>
                       <img src="/img/stone.png" style="height: 16px;">
                     </div>
                     <div class="d-inline-block w-50 text-right">
                       <span class="badge ssm no-shadow">
-                        {{ formatNumber(tool.stone * prices.stone) }}<i class="ton-icon"></i>
+                        {{ formatNumber(tool.craft.stone * prices.stone) }}<i class="ton-icon"></i>
                       </span>
                     </div>
                   </div>
