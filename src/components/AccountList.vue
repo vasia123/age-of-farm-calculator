@@ -53,11 +53,13 @@
                   {{ $t('dailyProfit') }}:
                 </td>
                 <td>
-                  <div v-for="(amount, resource) in summariesStore.getAccountResourcesSummary(account.id)"
-                    :key="resource" class="tool-costs-row">
-                    {{ fn(amount) }}
-                    <img :src="'/age-of-farm-calculator/img/' + resource + '.png'" width="20px" class="mb-1" />
-                  </div>
+                  <template v-for="(amount, resource) in summariesStore.getAccountResourcesSummary(account.id)"
+                    :key="resource">
+                    <div v-if="amount > 0" class="tool-costs-row">
+                      {{ fn(amount) }}
+                      <img :src="'/age-of-farm-calculator/img/' + resource + '.png'" width="20px" class="mb-1" />
+                    </div>
+                  </template>
                 </td>
                 <td>
                   <template v-for="(amount, resource) in summariesStore.getAccountDailyConsumptionSummary(account.id)"

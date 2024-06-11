@@ -7,7 +7,7 @@ export const useSummariesStore = defineStore('summaries', () => {
   const accountsStore = useAccountsStore();
   const toolsStore = useToolsStore();
 
-  function getAccountResourcesSummary(accountId: number): Record<string, number> {
+  function getAccountRawResourcesSummary(accountId: number): Record<string, number> {
     const account = accountsStore.accounts.find(acc => acc.id === accountId);
     if (!account) return {};
 
@@ -25,6 +25,24 @@ export const useSummariesStore = defineStore('summaries', () => {
     });
     return resourceSummary;
   }
+  function getAccountResourcesSummary(accountId: number): Record<string, number> {
+    const consumptionSummary = getAccountRawDailConsumptionSummary(accountId)
+    const profitSummary = getAccountRawResourcesSummary(accountId)
+    if (profitSummary.wood) {
+      profitSummary.wood -= consumptionSummary.wood;
+      if (profitSummary.wood < 0) profitSummary.wood = 0;
+    }
+    if (profitSummary.food) {
+      profitSummary.food -= consumptionSummary.food;
+      if (profitSummary.food < 0) profitSummary.food = 0;
+    }
+    if (profitSummary.stone) {
+      profitSummary.stone -= consumptionSummary.stone;
+      if (profitSummary.stone < 0) profitSummary.stone = 0;
+    }
+
+    return profitSummary;
+  }
 
   function getAccountDailyProfitSummary(accountId: number): number {
     const account = accountsStore.accounts.find(acc => acc.id === accountId);
@@ -38,7 +56,7 @@ export const useSummariesStore = defineStore('summaries', () => {
   }
 
 
-  function getAccountDailyConsumptionSummary(accountId: number): { [key in ResourceType]: number } {
+  function getAccountRawDailConsumptionSummary(accountId: number): { [key in ResourceType]: number } {
     const consumptionSummary: { [key in ResourceType]: number } = {
       food: 0,
       stone: 0,
@@ -53,8 +71,12 @@ export const useSummariesStore = defineStore('summaries', () => {
       consumptionSummary.stone += tool.repair.stone / tool.cooldown * 24;
       consumptionSummary.wood += tool.repair.wood / tool.cooldown * 24;
     });
+    return consumptionSummary;
+  }
 
-    const profitSummary = getAccountResourcesSummary(accountId)
+  function getAccountDailyConsumptionSummary(accountId: number): { [key in ResourceType]: number } {
+    const consumptionSummary = getAccountRawDailConsumptionSummary(accountId)
+    const profitSummary = getAccountRawResourcesSummary(accountId)
     if (profitSummary.wood) {
       consumptionSummary.wood -= profitSummary.wood;
       if (consumptionSummary.wood < 0) consumptionSummary.wood = 0;
