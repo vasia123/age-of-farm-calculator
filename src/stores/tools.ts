@@ -1,9 +1,18 @@
 import { defineStore } from 'pinia';
 import type { Tool, ResourceType } from '@/types/main';
 import { usePricesStore } from './prices';
+import { useSeasonStore } from '@/stores/season';
+import { computed, ref } from 'vue';
+
 
 export const useToolsStore = defineStore('tools', () => {
-  const tools: Tool[] = [
+  const seasonStore = useSeasonStore();
+
+  const energyMultiplyer = computed(
+    () => seasonStore.season === 'summer' ? 1 : 3
+  )
+
+  const tools = ref<Tool[]>([
     // {
     //   name: 'Axe (Promo)',
     //   icon: 'img/axe_promo.png',
@@ -288,13 +297,13 @@ export const useToolsStore = defineStore('tools', () => {
         stone: 18,
       },
     },
-  ];
+  ]);
   const types: Record<ResourceType, Tool[]> = {
     wood: [],
     food: [],
     stone: [],
   };
-  for (const tool of tools) {
+  for (const tool of tools.value) {
     if (!types[tool.resource]) {
       types[tool.resource] = [];
     }
@@ -311,7 +320,7 @@ export const useToolsStore = defineStore('tools', () => {
           const resourceCost = pricesStore.getResourcePrice(resourceOrTool as ResourceType)
           return tool.craft[resourceOrTool] * resourceCost + sum
         } else {
-          const foundTool = tools.find(t => t.name === resourceOrTool)
+          const foundTool = tools.value.find(t => t.name === resourceOrTool)
           if (!foundTool) {
             return sum
           }
@@ -332,7 +341,7 @@ export const useToolsStore = defineStore('tools', () => {
           cost: tool.craft[resource] * pricesStore.getResourcePrice(resource)
         }
       }
-      const foundTool = tools.find(t => t.name === resourceOrTool)
+      const foundTool = tools.value.find(t => t.name === resourceOrTool)
       if (!foundTool) {
         return {
           icon: ``,
@@ -360,7 +369,7 @@ export const useToolsStore = defineStore('tools', () => {
     return netProfit;
   }
   function getToolOneUseEnergyCost(tool: Tool): number {
-    return tool.energy / 5 * pricesStore.prices.food;
+    return (tool.energy * energyMultiplyer.value / 5) * pricesStore.prices.food;
   }
 
   function getToolDailyProfit(tool: Tool) {
@@ -377,6 +386,7 @@ export const useToolsStore = defineStore('tools', () => {
   return {
     tools,
     toolsByType,
+    energyMultiplyer,
     getToolCraftCost,
     getToolCraftResources,
     getToolOneUseEnergyCost,

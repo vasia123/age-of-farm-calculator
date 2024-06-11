@@ -67,7 +67,7 @@ export const useSummariesStore = defineStore('summaries', () => {
     if (!account) return consumptionSummary;
 
     account.tools.forEach(tool => {
-      consumptionSummary.food += tool.energy / tool.cooldown * 24 / 5;
+      consumptionSummary.food += tool.energy * toolsStore.energyMultiplyer / tool.cooldown * 24 / 5;
       consumptionSummary.stone += tool.repair.stone / tool.cooldown * 24;
       consumptionSummary.wood += tool.repair.wood / tool.cooldown * 24;
     });
@@ -97,10 +97,7 @@ export const useSummariesStore = defineStore('summaries', () => {
     return accountsStore.accounts.reduce(
       (fullSum, account) => {
         const toolsDailyProfit = account.tools.reduce((sum, tool) => {
-          const grossProfit = toolsStore.getToolDailyProfit(tool);
-          const energyCost = toolsStore.getToolOneUseEnergyCost(tool) * 24;
-          const repairCost = toolsStore.getToolOneUseDurabilityCost(tool) * 24;
-          const netProfit = grossProfit - energyCost - repairCost;
+          const netProfit = toolsStore.getToolDailyProfit(tool);
           return sum + netProfit;
         }, 0);
         return fullSum + toolsDailyProfit;
