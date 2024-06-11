@@ -196,6 +196,7 @@ export const useToolsStore = defineStore('tools', () => {
         stone: 16,
       },
     },
+
     {
       name: 'Spear (Common)',
       icon: 'img/spear_common.png',
@@ -217,8 +218,8 @@ export const useToolsStore = defineStore('tools', () => {
       icon: 'img/spear_uncommon.png',
       profit: 8,
       craft: {
-        wood: 1160,
-        stone: 1110,
+        wood: 1740,
+        stone: 1690,
       },
       cooldown: 1,
       resource: 'food',
@@ -233,8 +234,8 @@ export const useToolsStore = defineStore('tools', () => {
       icon: 'img/spear_rare.png',
       profit: 19,
       craft: {
-        wood: 2220,
-        stone: 2170,
+        wood: 3960,
+        stone: 3860,
       },
       cooldown: 1,
       resource: 'food',
@@ -249,8 +250,8 @@ export const useToolsStore = defineStore('tools', () => {
       icon: 'img/spear_epic.png',
       profit: 39,
       craft: {
-        wood: 4340,
-        stone: 4290,
+        wood: 8300,
+        stone: 8150,
       },
       cooldown: 1,
       resource: 'food',
@@ -265,8 +266,8 @@ export const useToolsStore = defineStore('tools', () => {
       icon: 'img/spear_legendary.png',
       profit: 92,
       craft: {
-        wood: 8580,
-        stone: 8530,
+        wood: 16880,
+        stone: 16680,
       },
       cooldown: 1,
       resource: 'food',
