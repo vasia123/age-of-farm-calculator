@@ -68,6 +68,9 @@ export const useAccountsStore = defineStore('accounts', () => {
           })
         });
       }
+    } else {
+      addAccount();
+      saveAccounts();
     }
   }
 
