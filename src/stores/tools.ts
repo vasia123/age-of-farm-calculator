@@ -342,7 +342,7 @@ export const useToolsStore = defineStore('tools', () => {
       }
       return {
         icon: foundTool.icon,
-        count: tool.craft[resourceOrTool] === 1 ? 0 : tool.craft[resourceOrTool],
+        count: tool.craft[resourceOrTool],
         cost: getToolCraftCost(foundTool)
       }
     })
