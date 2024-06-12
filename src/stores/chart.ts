@@ -1,16 +1,14 @@
+import type { UTCTimestamp } from 'lightweight-charts';
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import type { UTCTimestamp } from 'lightweight-charts';
 
 export const useChartStore = defineStore('chart', () => {
   const chartPrices = ref<{
     FOOD: string;
     STONE: string;
     WOOD: string;
-    INGOT: string;
-    PLANKS: string;
-    SOUP: string;
-    date_update: number;
+    SKIN: string;
+    date_create: string;
   }[]>([]);
   const chartError = ref(false);
   const tomorrow = new Date();
@@ -21,7 +19,7 @@ export const useChartStore = defineStore('chart', () => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
-    const cacheKey = `${year}-${month}-${day}`;
+    const cacheKey = `age-of-farmers-${year}-${month}-${day}`;
 
     const twoDaysAgo = new Date();
     twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
@@ -59,49 +57,21 @@ export const useChartStore = defineStore('chart', () => {
 
   const foodData = computed(() =>
     chartPrices.value.map(price => ({
-      time: price.date_update as UTCTimestamp,
+      time: new Date(price.date_create).getTime() / 1000 as UTCTimestamp,
       value: parseFloat(price.FOOD)
-    }))
-  );
-
-  const stoneData = computed(() =>
-    chartPrices.value.map(price => ({
-      time: price.date_update as UTCTimestamp,
-      value: parseFloat(price.STONE)
     }))
   );
 
   const woodData = computed(() =>
     chartPrices.value.map(price => ({
-      time: price.date_update as UTCTimestamp,
+      time: new Date(price.date_create).getTime() / 1000 as UTCTimestamp,
       value: parseFloat(price.WOOD)
     }))
   );
 
-  const IngotData = computed(() =>
+  const stoneData = computed(() =>
     chartPrices.value.map(price => ({
-      time: price.date_update as UTCTimestamp,
-      value: parseFloat(price.INGOT)
-    }))
-  );
-
-  const PlanksData = computed(() =>
-    chartPrices.value.map(price => ({
-      time: price.date_update as UTCTimestamp,
-      value: parseFloat(price.PLANKS)
-    }))
-  );
-
-  const SoupData = computed(() =>
-    chartPrices.value.map(price => ({
-      time: price.date_update as UTCTimestamp,
-      value: parseFloat(price.SOUP)
-    }))
-  );
-
-  const StoneData = computed(() =>
-    chartPrices.value.map(price => ({
-      time: price.date_update as UTCTimestamp,
+      time: new Date(price.date_create).getTime() / 1000 as UTCTimestamp,
       value: parseFloat(price.STONE)
     }))
   );
@@ -110,7 +80,7 @@ export const useChartStore = defineStore('chart', () => {
     const prevDate = new Date(currentDate.value);
     prevDate.setDate(prevDate.getDate() - 1);
 
-    if (prevDate >= new Date(2024, 3, 19)) {
+    if (prevDate >= new Date(2024, 5, 11)) {
       currentDate.value = prevDate;
       const result = await fetchChartPrices(currentDate.value);
       chartPrices.value = [...result, ...chartPrices.value];
@@ -127,10 +97,6 @@ export const useChartStore = defineStore('chart', () => {
     foodData,
     stoneData,
     woodData,
-    IngotData,
-    PlanksData,
-    SoupData,
-    StoneData,
     fetchMoreData
   };
 });

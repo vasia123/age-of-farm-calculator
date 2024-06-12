@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { useSettingsStore } from '@/stores/settings';
 import type { ResourceType } from '@/types/main';
-// import { useChartStore } from './chart';
+import { useChartStore } from './chart';
 
 export const usePricesStore = defineStore('prices', () => {
   type Prices = { [key in ResourceType]: number };
@@ -21,7 +21,7 @@ export const usePricesStore = defineStore('prices', () => {
   let priceTonTimeout: number;
 
   const settingsStore = useSettingsStore();
-  // const chartStore = useChartStore();
+  const chartStore = useChartStore();
 
   async function fetchPrices() {
     try {
@@ -46,25 +46,27 @@ export const usePricesStore = defineStore('prices', () => {
     const twoDaysAgo = new Date(today);
     twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
 
-    // const pricesPromises = [
-    //   chartStore.fetchChartPrices(tomorrow),
-    //   chartStore.fetchChartPrices(today),
-    //   chartStore.fetchChartPrices(yesterday),
-    //   chartStore.fetchChartPrices(twoDaysAgo),
-    // ];
+    const pricesPromises = [
+      chartStore.fetchChartPrices(tomorrow),
+      chartStore.fetchChartPrices(today),
+      chartStore.fetchChartPrices(yesterday),
+      chartStore.fetchChartPrices(twoDaysAgo),
+    ];
 
-    // const pricesDataAll = await Promise.all(pricesPromises);
-    // const pricesData = pricesDataAll.filter(prices => prices.length > 0).sort((a, b) => a[0].date_update - b[0].date_update);
+    const pricesDataAll = await Promise.all(pricesPromises);
+    const pricesData = pricesDataAll.filter(prices => prices.length > 0).sort(
+      (a, b) => new Date(a[0].date_create).getTime() - new Date(b[0].date_create).getTime()
+    );
 
-    // if (pricesData.length > 0) {
-    //   const prevDayPrices = pricesData[pricesData.length - 1];
-    //   const resourceTypes: (ResourceType)[] = ['wood', 'food', 'stone'];
-    //   resourceTypes.forEach(resource => {
-    //     const prices = prevDayPrices.map((item: any) => parseFloat(item[resource.toUpperCase()])).filter(price => price > 0);
-    //     const averagePrice = prices.reduce((sum, price) => sum + price, 0) / prices.length;
-    //     prevDayAveragePrices.value[resource] = averagePrice;
-    //   });
-    // }
+    if (pricesData.length > 0) {
+      const prevDayPrices = pricesData[pricesData.length - 1];
+      const resourceTypes: (ResourceType)[] = ['wood', 'food', 'stone'];
+      resourceTypes.forEach(resource => {
+        const prices = prevDayPrices.map((item: any) => parseFloat(item[resource.toUpperCase()])).filter(price => price > 0);
+        const averagePrice = prices.reduce((sum, price) => sum + price, 0) / prices.length;
+        prevDayAveragePrices.value[resource] = averagePrice;
+      });
+    }
   }
 
   function getResourcePrice(resource: ResourceType): number {

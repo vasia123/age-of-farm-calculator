@@ -138,17 +138,9 @@ const getResourceColor = (resource: string) => {
         case 'FOOD':
             return 'blue';
         case 'STONE':
-            return 'stone';
+            return 'gold';
         case 'WOOD':
             return 'green';
-        case 'INGOT':
-            return 'gray';
-        case 'PLANKS':
-            return 'brown';
-        case 'SOUP':
-            return 'orange';
-        case 'STONE':
-            return 'darkgray';
         default:
             return 'black';
     }

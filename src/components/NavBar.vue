@@ -17,7 +17,7 @@
         <img class="mr-1" src="/img/stone.png" alt="Stone">
         <strong>{{ formatNumber(prices.stone) }}</strong>
       </div>
-      <!-- <button @click="openChartModal" class="btn btn-primary">{{ $t('showCharts') }}</button> -->
+      <button @click="openChartModal" class="btn btn-primary">{{ $t('showCharts') }}</button>
     </div>
     <ul class="nav navbar-nav nav-flex-icons ml-auto">
       <li class="nav-item">
@@ -61,9 +61,9 @@ function changeLanguage(lang: string) {
   localStorage.setItem('selectedLanguage', lang);
 }
 
-// function openChartModal() {
-//   modalsStore.openChartModal();
-// }
+function openChartModal() {
+  modalsStore.openChartModal();
+}
 
 function toggleSettingsMenu() {
   modalsStore.toggleSettingsMenu();

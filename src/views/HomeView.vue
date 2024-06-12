@@ -23,7 +23,7 @@
   <Footer />
   <AddToolModal />
   <SettingsMenu />
-  <!-- <PriceChartModal /> -->
+  <PriceChartModal />
   <!-- <NewsModal /> -->
 </template>
 
@@ -42,7 +42,7 @@ import ProjectsLinks from '@/components/ProjectsLinks.vue';
 import SeasonsToggle from '@/components/SeasonsToggle.vue';
 // import NewsModal from '@/components/NewsModal.vue';
 import SettingsMenu from '@/components/SettingsMenu.vue';
-// import PriceChartModal from '@/components/PriceChartModal.vue';
+import PriceChartModal from '@/components/PriceChartModal.vue';
 import StackPriceCalculator from '@/components/StackPriceCalculator.vue';
 
 const { t: $t } = useI18n();

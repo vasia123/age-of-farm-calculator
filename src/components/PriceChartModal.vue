@@ -18,7 +18,6 @@
                 <img src="/img/wood.png" width="40px" height="40px" />
                 <img src="/img/food.png" width="40px" height="40px" />
                 <img src="/img/stone.png" width="40px" height="40px" />
-                <img src="/img/stone.png" width="40px" height="40px" />
               </button>
             </div>
             <div class="chart-container" v-if="selectedResourcesType === 'simple'">
