@@ -12,9 +12,10 @@
 
     <div v-if="serverError" class="server-error red mb-3">{{ $t('serverError') }}</div>
 
+    <SeasonsToggle />
     <AccountList />
 
-    <!-- <StackPriceCalculator /> -->
+    <StackPriceCalculator />
 
     <ToolTypeSummary />
   </div>
@@ -38,10 +39,11 @@ import ToolTypeSummary from '@/components/ToolTypeSummary.vue';
 import Footer from '@/components/PageFooter.vue';
 import AddToolModal from '@/components/AddToolModal.vue';
 import ProjectsLinks from '@/components/ProjectsLinks.vue';
+import SeasonsToggle from '@/components/SeasonsToggle.vue';
 // import NewsModal from '@/components/NewsModal.vue';
 import SettingsMenu from '@/components/SettingsMenu.vue';
 // import PriceChartModal from '@/components/PriceChartModal.vue';
-// import StackPriceCalculator from '@/components/StackPriceCalculator.vue';
+import StackPriceCalculator from '@/components/StackPriceCalculator.vue';
 
 const { t: $t } = useI18n();
 const accountsStore = useAccountsStore();

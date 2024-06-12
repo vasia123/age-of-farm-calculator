@@ -68,6 +68,8 @@ const i18n = createI18n({
             kitchen: "Kitchen",
             forge: "Forge",
             siteNews: "New functionality",
+            seasonSummer: "summer",
+            seasonWinter: "winter",
         },
         ru: {
             title: "Калькулятор окупаемости",
@@ -131,6 +133,8 @@ const i18n = createI18n({
             kitchen: "Кухня",
             forge: "Кузница",
             siteNews: "Новый функционал",
+            seasonSummer: "лето",
+            seasonWinter: "зима",
         },
     },
 });
