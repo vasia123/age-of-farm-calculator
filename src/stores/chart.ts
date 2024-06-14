@@ -1,3 +1,4 @@
+import type { Prices, ResourceType } from '@/types/main';
 import type { UTCTimestamp } from 'lightweight-charts';
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
@@ -10,6 +11,11 @@ export const useChartStore = defineStore('chart', () => {
     SKIN: string;
     date_create: string;
   }[]>([]);
+  const prevDayAveragePrices = ref<Prices>({
+    wood: 0.00,
+    food: 0.00,
+    stone: 0.00,
+  });
   const chartError = ref(false);
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
@@ -89,14 +95,48 @@ export const useChartStore = defineStore('chart', () => {
     return false;
   }
 
+  async function loadPricesForThreeDays() {
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const twoDaysAgo = new Date(today);
+    twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+
+    const pricesPromises = [
+      fetchChartPrices(tomorrow),
+      fetchChartPrices(today),
+      fetchChartPrices(yesterday),
+      fetchChartPrices(twoDaysAgo),
+    ];
+
+    const pricesDataAll = await Promise.all(pricesPromises);
+    const pricesData = pricesDataAll.filter(prices => prices.length > 0).sort(
+      (a, b) => new Date(a[0].date_create).getTime() - new Date(b[0].date_create).getTime()
+    );
+
+    if (pricesData.length > 0) {
+      const prevDayPrices = pricesData[pricesData.length - 1];
+      const resourceTypes: (ResourceType)[] = ['wood', 'food', 'stone'];
+      resourceTypes.forEach(resource => {
+        const prices = prevDayPrices.map((item: any) => parseFloat(item[resource.toUpperCase()])).filter(price => price > 0);
+        const averagePrice = prices.reduce((sum, price) => sum + price, 0) / prices.length;
+        prevDayAveragePrices.value[resource] = averagePrice;
+      });
+    }
+  }
+
   return {
     chartPrices,
     chartError,
     currentDate,
     fetchChartPrices,
+    prevDayAveragePrices,
     foodData,
     stoneData,
     woodData,
+    loadPricesForThreeDays,
     fetchMoreData
   };
 });

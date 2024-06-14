@@ -658,3 +658,7 @@ table.table.mwm td {
 .icon-resource-select-resource {
   margin: 0 5px 0;
 }
+.small-font {
+  font-size: 12px;
+  font-weight: bold;
+}

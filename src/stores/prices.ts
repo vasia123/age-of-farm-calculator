@@ -1,17 +1,11 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { useSettingsStore } from '@/stores/settings';
-import type { ResourceType } from '@/types/main';
+import type { Prices, ResourceType } from '@/types/main';
 import { useChartStore } from './chart';
 
 export const usePricesStore = defineStore('prices', () => {
-  type Prices = { [key in ResourceType]: number };
   const prices = ref<Prices>({
-    wood: 0.00,
-    food: 0.00,
-    stone: 0.00,
-  });
-  const prevDayAveragePrices = ref<Prices>({
     wood: 0.00,
     food: 0.00,
     stone: 0.00,
@@ -34,38 +28,6 @@ export const usePricesStore = defineStore('prices', () => {
       saveResourcesPrices();
     } catch (error) {
       console.error(error);
-    }
-  }
-
-  async function loadPricesForThreeDays() {
-    const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
-    const twoDaysAgo = new Date(today);
-    twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
-
-    const pricesPromises = [
-      chartStore.fetchChartPrices(tomorrow),
-      chartStore.fetchChartPrices(today),
-      chartStore.fetchChartPrices(yesterday),
-      chartStore.fetchChartPrices(twoDaysAgo),
-    ];
-
-    const pricesDataAll = await Promise.all(pricesPromises);
-    const pricesData = pricesDataAll.filter(prices => prices.length > 0).sort(
-      (a, b) => new Date(a[0].date_create).getTime() - new Date(b[0].date_create).getTime()
-    );
-
-    if (pricesData.length > 0) {
-      const prevDayPrices = pricesData[pricesData.length - 1];
-      const resourceTypes: (ResourceType)[] = ['wood', 'food', 'stone'];
-      resourceTypes.forEach(resource => {
-        const prices = prevDayPrices.map((item: any) => parseFloat(item[resource.toUpperCase()])).filter(price => price > 0);
-        const averagePrice = prices.reduce((sum, price) => sum + price, 0) / prices.length;
-        prevDayAveragePrices.value[resource] = averagePrice;
-      });
     }
   }
 
@@ -143,7 +105,7 @@ export const usePricesStore = defineStore('prices', () => {
 
   function getPriceChangePercentage(resource: ResourceType): string {
     const currentPrice = prices.value[resource];
-    const prevDayAveragePrice = prevDayAveragePrices.value[resource];
+    const prevDayAveragePrice = chartStore.prevDayAveragePrices[resource];
     if (prevDayAveragePrice === 0) {
       return '';
     }
@@ -155,7 +117,6 @@ export const usePricesStore = defineStore('prices', () => {
     prices,
     tonPriceUsd,
     fetchPrices,
-    loadPricesForThreeDays,
     fetchTonPrice,
     getResourcePrice,
     startPricesTimers,

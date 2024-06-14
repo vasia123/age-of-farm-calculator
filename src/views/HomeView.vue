@@ -44,11 +44,13 @@ import SeasonsToggle from '@/components/SeasonsToggle.vue';
 import SettingsMenu from '@/components/SettingsMenu.vue';
 import PriceChartModal from '@/components/PriceChartModal.vue';
 import StackPriceCalculator from '@/components/StackPriceCalculator.vue';
+import { useChartStore } from '@/stores/chart';
 
 const { t: $t } = useI18n();
 const accountsStore = useAccountsStore();
 const pricesStore = usePricesStore();
 const settingsStore = useSettingsStore();
+const chartStore = useChartStore();
 
 const serverError = computed(() => settingsStore.serverError);
 
@@ -72,7 +74,7 @@ onMounted(() => {
   window.addEventListener('beforeunload', () => {
     window.clearTimeout(reloadTimeout);
   });
-  pricesStore.loadPricesForThreeDays();
+  chartStore.loadPricesForThreeDays();
 });
 
 onUnmounted(() => {

@@ -45,7 +45,9 @@
                           : '🤷‍♂️'
                         }}
                       </span>
-                      {{ $t('days') }}
+                      <span class="small-font ml-1">
+                        {{ $t('days') }} ({{ $t('craft') }})
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -76,6 +78,20 @@
                       </span>
                     </div>
                   </div>
+                  <div class="d-block fw_craft">
+                    <div class="d-inline-block w-50 text-right">
+                      <span class="badge sm no-shadow">
+                        <a :href="urlToNFTCollection(tool.name)" target="_blank">{{ $t('nftPrice') }}</a>:
+                      </span>
+                    </div>
+                    <div class="d-inline-block w-50 text-right">
+                      <span class="badge grey darken-2 sm">
+                        {{ nftPricesStore.getNftPriceForTool(tool.name) > 0
+                          ? formatNumber(nftPricesStore.getNftPriceForTool(tool.name))
+                          : '🤷‍♂️' }}<i class="ton-icon"></i>
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -84,19 +100,31 @@
       </div>
     </div>
   </div>
-
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useToolsStore } from '@/stores/tools';
 import { usePricesStore } from '@/stores/prices';
+import { useNftPricesStore } from '@/stores/nft_prices';
 import { formatNumber } from '@/shared/utils';
 
 const { t: $t } = useI18n();
 const toolsStore = useToolsStore();
 const pricesStore = usePricesStore();
+const nftPricesStore = useNftPricesStore();
 
 const toolTypes = computed(() => toolsStore.toolsByType);
+
+onMounted(() => {
+  nftPricesStore.startPollingItemPrices()
+});
+
+const urlToNFTCollection = (toolName: string) => {
+  const nftName = nftPricesStore.getNftNameForTool(toolName);
+  const encodedNftName = encodeURIComponent(nftName.replace(/ /g, '+'));
+  return `https://getgems.io/collection/EQCacs0fOBdHPrOuzscIFHbCytC1MfxcWGRRoqFOJTZwrNSK?filter=%7B%22q%22%3A%22${encodedNftName}%22%2C%22saleType%22%3A%22fix_price%22%7D`;
+};
+
 </script>

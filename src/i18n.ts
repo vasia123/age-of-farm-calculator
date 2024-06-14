@@ -70,6 +70,8 @@ const i18n = createI18n({
             siteNews: "New functionality",
             seasonSummer: "summer",
             seasonWinter: "winter",
+            nftPrice: "NFT Price",
+            craft: "craft",
         },
         ru: {
             title: "Калькулятор окупаемости",
@@ -135,6 +137,8 @@ const i18n = createI18n({
             siteNews: "Новый функционал",
             seasonSummer: "лето",
             seasonWinter: "зима",
+            nftPrice: "Цена нфт",
+            craft: "крафт",
         },
     },
 });
