@@ -20,8 +20,8 @@
         </div>
         <div class="toggle-titles-wrapper">
             <div class="toggle-titles">
-                <div v-for="season in seasons" :key="season.name" class="toggle-title"
-                    :class="{ 'toggle-title--active': season.active }">
+                <div v-for="season, index in seasons" :key="season.name" class="toggle-title"
+                    :class="{ 'toggle-title--active': index === seasonIndex }">
                     {{ $t(season.label) }}
                     <div v-if="season.name === 'winter'" class="toggle-title-hint">
                         <img src="/img/energy_icon.png" width="7px" class="ml-1">x3
@@ -192,6 +192,7 @@ const setSeason = (index: number) => {
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: color 0.5s;
 }
 
 .toggle-titles,
@@ -253,8 +254,7 @@ const setSeason = (index: number) => {
     background-color: yellow;
 }
 
-.toggle-winter .toggle-title.toggle-title--active,
-.toggle-winter .toggle-date.toggle-date--active {
+.toggle-winter .toggle-title.toggle-title--active {
     color: #2AD8E6;
 }
 </style>
