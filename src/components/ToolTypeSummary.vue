@@ -58,7 +58,7 @@
                     <div class="d-block fw_craft" v-if="toolCraftResource.cost > 0">
                       <div class="d-inline-block w-50 text-right">
                         <span class="badge ssm no-shadow" v-if="toolCraftResource.count !== ''">
-                          {{ toolCraftResource.count }}
+                          {{ $t(toolCraftResource.count) }}
                         </span>
                         <img :src="toolCraftResource.icon" style="height: 16px;">
                       </div>
