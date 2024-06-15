@@ -74,10 +74,10 @@ const seasonIndex = ref(seasons.findIndex(s => s.active))
 const seasonsOffset = computed(() => {
     const activeSeasonIndex = seasons.findIndex(season => season.active);
     if (activeSeasonIndex > -1) {
-        const activeSeason = seasons[activeSeasonIndex]
+        const activeSeason = seasons[activeSeasonIndex];
         const now = DateTime.now().setZone('Europe/Moscow');
         const seasonProgress = now.diff(activeSeason.startDate, 'days').days;
-        const offset = (seasonProgress * (seasonWidth / 4))
+        const offset = (seasonProgress * (seasonWidth / 4));
         return activeSeasonIndex * seasonWidth + offset - 4;
     }
     return 0;
@@ -122,9 +122,11 @@ const setSeason = (index: number) => {
     position: absolute;
     top: 0;
     left: 0;
-    width: 4px;
-    height: 100%;
+    transform: translate(0, 0);
+    width: 10px;
+    height: 10px;
     background-color: #6c7ae0;
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
 }
 
 .toggle-icon--active .toggle-icon__image {
@@ -249,5 +251,10 @@ const setSeason = (index: number) => {
 
 .toggle-winter .toggle-line {
     background-color: yellow;
+}
+
+.toggle-winter .toggle-title.toggle-title--active,
+.toggle-winter .toggle-date.toggle-date--active {
+    color: #2AD8E6;
 }
 </style>
