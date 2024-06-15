@@ -71,6 +71,7 @@ const i18n = createI18n({
             seasonSummer: "summer",
             seasonWinter: "winter",
             nftPrice: "NFT Price",
+            nft: "NFT",
             craft: "craft",
         },
         ru: {
@@ -138,6 +139,7 @@ const i18n = createI18n({
             seasonSummer: "лето",
             seasonWinter: "зима",
             nftPrice: "Цена нфт",
+            nft: "NFT",
             craft: "крафт",
         },
     },

@@ -40,13 +40,14 @@
                     <div class="d-block mt-2">
                       <span class="ml-3 badge sm no-shadow">{{ $t('roi') }}:</span>
                       <span class="badge grey darken-2 sm ml-1">
-                        {{ toolsStore.getToolDailyProfit(tool) > 0
-                          ? toolsStore.getToolROI(tool, toolsStore.getToolCraftCost(tool)).days.toFixed(1)
-                          : '🤷‍♂️'
-                        }}
+                        {{ getROI(tool) }}
                       </span>
                       <span class="small-font ml-1">
-                        {{ $t('days') }} ({{ $t('craft') }})
+                        {{ $t('days') }} ({{
+                          isNFTPriceLower(tool)
+                            ? $t('nft')
+                            : $t('craft')
+                        }})
                       </span>
                     </div>
                   </div>
@@ -109,6 +110,7 @@ import { useToolsStore } from '@/stores/tools';
 import { usePricesStore } from '@/stores/prices';
 import { useNftPricesStore } from '@/stores/nft_prices';
 import { formatNumber } from '@/shared/utils';
+import type { Tool } from '@/types/main';
 
 const { t: $t } = useI18n();
 const toolsStore = useToolsStore();
@@ -121,6 +123,18 @@ onMounted(() => {
   nftPricesStore.startPollingItemPrices()
 });
 
+const isNFTPriceLower = (tool: Tool) => {
+  const nftPrice = nftPricesStore.getNftPriceForTool(tool.name)
+  return nftPrice > 0 && nftPrice < toolsStore.getToolCraftCost(tool);
+}
+const getROI = (tool: Tool) => {
+  const dailyProfit = isNFTPriceLower(tool)
+    ? nftPricesStore.getNftPriceForTool(tool.name)
+    : toolsStore.getToolDailyProfit(tool)
+  return dailyProfit > 0
+    ? toolsStore.getToolROI(tool, dailyProfit).days.toFixed(1)
+    : '🤷‍♂️'
+}
 const urlToNFTCollection = (toolName: string) => {
   const nftName = nftPricesStore.getNftNameForTool(toolName);
   const encodedNftName = encodeURIComponent(nftName.replace(/ /g, '+'));
