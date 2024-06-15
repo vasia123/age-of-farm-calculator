@@ -217,7 +217,7 @@ const setSeason = (index: number) => {
     height: 32px;
     background-color: #fff;
     border-radius: 50%;
-    border: 1px solid #6c7ae0;
+    border: 1px solid #FFD717;
     transition: transform 0.3s;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     z-index: 1;
@@ -241,6 +241,10 @@ const setSeason = (index: number) => {
 
 .toggle-winter .toggle-label {
     background-color: #6c7ae0;
+}
+
+.toggle-winter .toggle-switch {
+    border: 1px solid #6c7ae0;
 }
 
 .toggle-winter .toggle-line {
