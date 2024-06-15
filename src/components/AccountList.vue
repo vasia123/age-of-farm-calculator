@@ -30,15 +30,15 @@
                 </td>
                 <td>
                   <div v-if="tool.energy > 0" class="tool-costs-row">
-                    {{ fn(tool.energy * energyMultiplyer / 5 * 24) }}
+                    -{{ fn(tool.energy * energyMultiplyer / 5 * 24) }}
                     <img src="/img/food.png" width="20px" class="mb-1" />
                   </div>
                   <div v-if="tool.repair.stone > 0" class="tool-costs-row">
-                    {{ fn(tool.repair.stone * 24) }}
+                    -{{ fn(tool.repair.stone * 24) }}
                     <img src="/img/stone.png" width="20px" class="mb-1" />
                   </div>
                   <div v-if="tool.repair.wood > 0" class="tool-costs-row">
-                    {{ fn(tool.repair.wood * 24) }}
+                    -{{ fn(tool.repair.wood * 24) }}
                     <img src="/img/wood.png" width="20px" class="mb-1" />
                   </div>
                 </td>
@@ -77,7 +77,7 @@
                 <td>
                   {{ $t('roi') }}: <span class="badge grey darken-2 sm ml-1">{{
                     summariesStore.getAccountROI(account.id).toFixed(1)
-                    }}</span>
+                  }}</span>
                   {{ $t('days') }}
                 </td>
               </tr>

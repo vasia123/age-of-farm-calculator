@@ -11,7 +11,7 @@
         <div class="toggle-label" :class="currentSeason">
             <div class="toggle-icons">
                 <div class="toggle-line" :style="{ transform: `translateX(${seasonsOffset}px)` }"></div>
-                <div v-for="season, index in visibleSeasons" :key="season.name" class="toggle-icon"
+                <div v-for="season, index in seasons" :key="season.name" class="toggle-icon"
                     :class="{ 'toggle-icon--active': season.active }" @click="setSeason(index)">
                     <img :src="season.icon" :alt="season.name" class="toggle-icon__image">
                 </div>
@@ -20,7 +20,7 @@
         </div>
         <div class="toggle-titles-wrapper">
             <div class="toggle-titles">
-                <div v-for="season in visibleSeasons" :key="season.name" class="toggle-title"
+                <div v-for="season in seasons" :key="season.name" class="toggle-title"
                     :class="{ 'toggle-title--active': season.active }">
                     {{ $t(season.label) }}
                     <div v-if="season.name === 'winter'" class="toggle-title-hint">
@@ -48,37 +48,37 @@ seasonStore.updateSeasonBySchedule();
 
 const seasons = seasonStore.generateSeasons();
 
-const totalVisibleSeasons = 5;
+const totalVisibleSeasons = 4;
 const totalSeasonsWidth = 300;
 const seasonWidth = totalSeasonsWidth / totalVisibleSeasons;
 
 const visibleTitlesOfSeasons = computed(() => {
-    const activeSeason = seasons.find(season => season.active);
-    if (activeSeason) {
-        const activeIndex = seasons.indexOf(activeSeason);
-        return seasons.slice(activeIndex - Math.floor(totalVisibleSeasons / 2), activeIndex + Math.ceil(totalVisibleSeasons / 2) + 1);
-    }
-    return seasons.slice(0, totalVisibleSeasons);
+    const titles = []
+    seasons.forEach(season => {
+        titles.push({
+            active: season.active,
+            startDate: season.startDate,
+            name: season.name,
+        })
+    })
+    titles.push({
+        active: false,
+        startDate: seasons[seasons.length - 1].endDate,
+        name: 'additional title',
+    })
+    return titles;
 });
 
-const visibleSeasons = computed(() => {
-    const activeSeason = seasons.find(season => season.active);
-    if (activeSeason) {
-        const activeIndex = seasons.indexOf(activeSeason);
-        return seasons.slice(activeIndex - Math.floor(totalVisibleSeasons / 2), activeIndex + Math.ceil(totalVisibleSeasons / 2));
-    }
-    return seasons.slice(0, totalVisibleSeasons);
-});
-
-const seasonIndex = ref(visibleSeasons.value.findIndex(s => s.active))
+const seasonIndex = ref(seasons.findIndex(s => s.active))
 
 const seasonsOffset = computed(() => {
-    const activeSeason = seasons.find(season => season.active);
-    if (activeSeason) {
+    const activeSeasonIndex = seasons.findIndex(season => season.active);
+    if (activeSeasonIndex > -1) {
+        const activeSeason = seasons[activeSeasonIndex]
         const now = DateTime.now().setZone('Europe/Moscow');
         const seasonProgress = now.diff(activeSeason.startDate, 'days').days;
-        const offset = (seasonProgress * (seasonWidth / 4) - 2 * (seasonWidth / 4))
-        return totalSeasonsWidth / 2 + offset - 4;
+        const offset = (seasonProgress * (seasonWidth / 4))
+        return activeSeasonIndex * seasonWidth + offset - 4;
     }
     return 0;
 });
@@ -88,7 +88,7 @@ const formatDate = (date: DateTime) => {
 };
 
 const setSeason = (index: number) => {
-    const season = visibleSeasons.value[index]
+    const season = seasons[index]
     seasonIndex.value = index
     seasonStore.setSeason(season.name)
 };
@@ -224,23 +224,19 @@ const setSeason = (index: number) => {
 }
 
 .toggle-switch--0 {
-    transform: translateX(10px);
+    transform: translateX(21px);
 }
 
 .toggle-switch--1 {
-    transform: translateX(69px);
+    transform: translateX(93px);
 }
 
 .toggle-switch--2 {
-    transform: translateX(129px);
+    transform: translateX(166px);
 }
 
 .toggle-switch--3 {
-    transform: translateX(189px);
-}
-
-.toggle-switch--4 {
-    transform: translateX(250px);
+    transform: translateX(238px);
 }
 
 .toggle-winter .toggle-label {
