@@ -24,7 +24,7 @@
                     :class="{ 'toggle-title--active': season.active }">
                     {{ $t(season.label) }}
                     <div v-if="season.name === 'winter'" class="toggle-title-hint">
-                        <img src="/img/food.png" width="20px" class="mb-1">x3
+                        <img src="/img/energy_icon.png" width="7px" class="ml-1">x3
                     </div>
                 </div>
             </div>
