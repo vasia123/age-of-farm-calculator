@@ -3,10 +3,12 @@ import type { Tool, ResourceType } from '@/types/main';
 import { usePricesStore } from './prices';
 import { useSeasonStore } from '@/stores/season';
 import { computed, ref } from 'vue';
+import { useNftPricesStore } from '@/stores/nft_prices';
 
 
 export const useToolsStore = defineStore('tools', () => {
   const seasonStore = useSeasonStore();
+  const nftPricesStore = useNftPricesStore();
 
   const energyMultiplyer = computed(
     () => seasonStore.season === 'winter' ? 3 : 1
@@ -337,7 +339,7 @@ export const useToolsStore = defineStore('tools', () => {
         const resource = resourceOrTool as ResourceType
         return {
           icon: `img/${resource}.png`,
-          count: tool.craft[resource],
+          count: String(tool.craft[resource]),
           cost: tool.craft[resource] * pricesStore.getResourcePrice(resource)
         }
       }
@@ -345,14 +347,23 @@ export const useToolsStore = defineStore('tools', () => {
       if (!foundTool) {
         return {
           icon: ``,
-          count: 0,
+          count: '',
           cost: 0
         }
       }
+      const nftPrice = nftPricesStore.getNftPriceForTool(foundTool.name)
+      const toolCraftPrice = getToolCraftCost(foundTool)
+      const nftPriceLower = nftPrice > 0 && nftPrice < toolCraftPrice
+      const cost = nftPriceLower
+        ? nftPrice
+        : toolCraftPrice
+      const count = nftPriceLower
+        ? 'nft'
+        : 'craft'
       return {
         icon: foundTool.icon,
-        count: tool.craft[resourceOrTool],
-        cost: getToolCraftCost(foundTool)
+        count,
+        cost
       }
     })
   }
