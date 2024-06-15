@@ -128,11 +128,12 @@ const isNFTPriceLower = (tool: Tool) => {
   return nftPrice > 0 && nftPrice < toolsStore.getToolCraftCost(tool);
 }
 const getROI = (tool: Tool) => {
-  const dailyProfit = isNFTPriceLower(tool)
+  const craftPrice = isNFTPriceLower(tool)
     ? nftPricesStore.getNftPriceForTool(tool.name)
-    : toolsStore.getToolDailyProfit(tool)
-  return dailyProfit > 0
-    ? toolsStore.getToolROI(tool, dailyProfit).days.toFixed(1)
+    : toolsStore.getToolCraftCost(tool)
+
+  return toolsStore.getToolDailyProfit(tool) > 0
+    ? toolsStore.getToolROI(tool, craftPrice).days.toFixed(1)
     : '🤷‍♂️'
 }
 const urlToNFTCollection = (toolName: string) => {
