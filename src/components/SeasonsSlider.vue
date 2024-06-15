@@ -177,11 +177,11 @@ const setSeason = (index: number) => {
 }
 
 .toggle-date:first-child {
-    margin-left: -20px;
+    margin-left: -45px;
 }
 
 .toggle-date:last-child {
-    margin-right: -30px;
+    margin-right: -40px;
 }
 
 .toggle-titles-wrapper,
