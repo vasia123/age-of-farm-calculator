@@ -68,7 +68,6 @@ export const useSeasonStore = defineStore('season', () => {
                 active
             });
         })
-        console.log('generatedSeasons', generatedSeasons)
 
         return generatedSeasons;
     };

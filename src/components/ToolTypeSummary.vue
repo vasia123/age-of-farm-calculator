@@ -58,7 +58,7 @@
                     <div class="d-block fw_craft" v-if="toolCraftResource.cost > 0">
                       <div class="d-inline-block w-50 text-right">
                         <span class="badge ssm no-shadow" v-if="toolCraftResource.count !== ''">
-                          {{ $t(toolCraftResource.count) }}
+                          {{ translateIfString(toolCraftResource.count) }}
                         </span>
                         <img :src="toolCraftResource.icon" style="height: 16px;">
                       </div>
@@ -141,5 +141,12 @@ const urlToNFTCollection = (toolName: string) => {
   const encodedNftName = encodeURIComponent(nftName.replace(/ /g, '+'));
   return `https://getgems.io/collection/EQCacs0fOBdHPrOuzscIFHbCytC1MfxcWGRRoqFOJTZwrNSK?filter=%7B%22q%22%3A%22${encodedNftName}%22%2C%22saleType%22%3A%22fix_price%22%7D`;
 };
-
+const translateIfString = (stringOrNumber: string) => {
+  const parsedNumber = parseInt(stringOrNumber, 10);
+  if (parsedNumber.toString() === stringOrNumber) {
+    return stringOrNumber;
+  } else {
+    return $t(stringOrNumber);
+  }
+};
 </script>
