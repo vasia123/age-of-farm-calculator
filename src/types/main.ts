@@ -50,3 +50,5 @@ export interface NftPrices {
     'Legendary Spear': string | null;
     requestTime: string;
 }
+
+export type Season = 'spring' | 'summer' | 'autumn' | 'winter';

@@ -67,7 +67,7 @@ export const useSummariesStore = defineStore('summaries', () => {
     if (!account) return consumptionSummary;
 
     account.tools.forEach(tool => {
-      consumptionSummary.food += tool.energy * toolsStore.energyMultiplyer / tool.cooldown * 24 / 5;
+      consumptionSummary.food += tool.energy * toolsStore.energyMultiplyer / tool.cooldown / 5 * 24;
       consumptionSummary.stone += tool.repair.stone / tool.cooldown * 24;
       consumptionSummary.wood += tool.repair.wood / tool.cooldown * 24;
     });

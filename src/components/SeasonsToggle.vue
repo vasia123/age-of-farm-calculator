@@ -1,35 +1,41 @@
 <template>
     <div class="toggle-container">
-        <div class="toggle-title-summer" :class="{ 'toggle-title--active': !isWinter }">
-            {{ $t('seasonSummer') }}
-        </div>
-        <div class="toggle-label" :class="{ 'winter-active': isWinter }" @click="toggleSeason">
-            <div class="toggle-summer">
-                <img src="/img/summer-icon.png" alt="Summer">
+        <div class="toggle-label" :class="{
+            'spring-active': isSpring,
+            'summer-active': isSummer,
+            'autumn-active': isAutumn,
+            'winter-active': isWinter,
+        }">
+            <div class="toggle-icon" @click="toggleSeason('spring')">
+                <img src="/img/spring-icon.png" alt="Spring" class="toggle-image toggle-image--spring">
             </div>
-            <div class="toggle-switch" :class="{ 'winter-active': isWinter }"></div>
-            <div class="toggle-winter">
-                <img src="/img/winter-icon.png" alt="Winter">
+            <div class="toggle-icon" @click="toggleSeason('summer')">
+                <img src="/img/summer-icon.png" alt="Summer" class="toggle-image toggle-image--summer">
             </div>
-        </div>
-        <div class="toggle-title-winter" :class="{ 'toggle-title--active': isWinter }">
-            {{ $t('seasonWinter') }}
+            <div class="toggle-icon" @click="toggleSeason('autumn')">
+                <img src="/img/autumn-icon.png" alt="Autumn" class="toggle-image toggle-image--autumn">
+            </div>
+            <div class="toggle-icon" @click="toggleSeason('winter')">
+                <img src="/img/winter-icon.png" alt="Winter" class="toggle-image toggle-image--winter">
+            </div>
+            <div class="toggle-switch"></div>
         </div>
     </div>
 </template>
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useSeasonStore } from '@/stores/season';
-import { useI18n } from 'vue-i18n';
-
-const { t: $t } = useI18n();
+import type { Season } from '@/types/main';
 
 const seasonStore = useSeasonStore();
 
+const isSpring = computed(() => seasonStore.season === 'spring')
+const isSummer = computed(() => seasonStore.season === 'summer')
+const isAutumn = computed(() => seasonStore.season === 'autumn')
 const isWinter = computed(() => seasonStore.season === 'winter')
 
-const toggleSeason = () => {
-    seasonStore.toggleSeason()
+const toggleSeason = (season: Season) => {
+    seasonStore.setSeason(season)
 };
 </script>
 
@@ -47,13 +53,31 @@ const toggleSeason = () => {
     position: relative;
     display: flex;
     align-items: center;
-    width: 120px;
+    justify-content: space-between;
+    width: 180px;
     height: 40px;
     background-color: #FFF4C1;
     border-radius: 25px;
     cursor: pointer;
     transition: background-color 0.3s;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 40px;
+}
+
+.toggle-image {
+    width: 24px;
+    z-index: 2;
+}
+
+.toggle-image--spring {
+    margin-left: -4px;
 }
 
 .toggle-switch {
@@ -69,36 +93,20 @@ const toggleSeason = () => {
     z-index: 1;
 }
 
+.spring-active .toggle-switch {
+    transform: translateX(0px);
+}
+
+.summer-active .toggle-switch {
+    transform: translateX(47px);
+}
+
+.autumn-active .toggle-switch {
+    transform: translateX(94px);
+}
+
 .winter-active .toggle-switch {
-    transform: translateX(80px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    background-color: #fff;
-    z-index: 2;
-}
-
-.toggle-summer,
-.toggle-winter {
-    display: flex;
-    align-items: center;
-    justify-content: left;
-    width: 60px;
-    height: 40px;
-}
-
-.toggle-winter {
-    justify-content: right;
-}
-
-.toggle-summer img,
-.toggle-winter img {
-    width: 28px;
-    margin: 0 6px;
-    z-index: 3;
-}
-
-.toggle-summer span,
-.toggle-winter span {
-    font-size: 14px;
+    transform: translateX(137px);
 }
 
 .winter-active {

@@ -9,7 +9,7 @@ export const useToolsStore = defineStore('tools', () => {
   const seasonStore = useSeasonStore();
 
   const energyMultiplyer = computed(
-    () => seasonStore.season === 'summer' ? 1 : 3
+    () => seasonStore.season === 'winter' ? 3 : 1
   )
 
   const tools = ref<Tool[]>([

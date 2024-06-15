@@ -6,6 +6,7 @@
           <div class="text-center my-2 font-weight-bolder">
             {{ account.name }}
           </div>
+          <!-- <SeasonsToggle /> -->
           <div class="no-tools" v-if="account.tools.length == 0">
             {{ $t('noToolsAdded') }}<br>{{ $t('addToolsInSettings') }}
           </div>
@@ -29,7 +30,7 @@
                 </td>
                 <td>
                   <div v-if="tool.energy > 0" class="tool-costs-row">
-                    {{ fn(tool.energy * toolsStore.energyMultiplyer / 5 * 24) }}
+                    {{ fn(tool.energy * energyMultiplyer / 5 * 24) }}
                     <img src="/img/food.png" width="20px" class="mb-1" />
                   </div>
                   <div v-if="tool.repair.stone > 0" class="tool-costs-row">
@@ -76,7 +77,7 @@
                 <td>
                   {{ $t('roi') }}: <span class="badge grey darken-2 sm ml-1">{{
                     summariesStore.getAccountROI(account.id).toFixed(1)
-                  }}</span>
+                    }}</span>
                   {{ $t('days') }}
                 </td>
               </tr>
@@ -120,6 +121,7 @@ import { useAccountsStore } from '@/stores/accounts';
 import { useSummariesStore } from '@/stores/summaries';
 import { useToolsStore } from '@/stores/tools';
 import { formatNumber } from '@/shared/utils';
+// import SeasonsToggle from '@/components/SeasonsToggle.vue'
 
 const { t: $t } = useI18n();
 const accountsStore = useAccountsStore();
@@ -127,4 +129,5 @@ const summariesStore = useSummariesStore();
 const toolsStore = useToolsStore();
 const fn = formatNumber;
 const accounts = computed(() => accountsStore.accounts);
+const energyMultiplyer = computed(() => toolsStore.energyMultiplyer);
 </script>
