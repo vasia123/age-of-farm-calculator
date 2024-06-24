@@ -1,5 +1,5 @@
 <template>
-    <div class="toggle-container" :class="`toggle-${seasonStore.season}`">
+    <div class="toggle-container" :class="`toggle-${currentSeason}`">
         <div class="toggle-dates-wrapper">
             <div class="toggle-dates">
                 <div v-for="season in visibleTitlesOfSeasons" :key="season.name" class="toggle-date"
@@ -43,8 +43,6 @@ const { t: $t } = useI18n();
 const seasonStore = useSeasonStore();
 
 const currentSeason = computed(() => seasonStore.season);
-
-seasonStore.updateSeasonBySchedule();
 
 const seasons = seasonStore.generateSeasons();
 

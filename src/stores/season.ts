@@ -19,32 +19,20 @@ interface SeasonsList {
 }
 
 export const useSeasonStore = defineStore('season', () => {
-    const season = ref<Season>('spring');
-    const isScheduled = ref<boolean>(true);
+    const firstSeasonStart = DateTime.fromObject({ year: 2024, month: 6, day: 12 }, { zone: 'Europe/Moscow' });
+    const now = DateTime.now().setZone('Europe/Moscow');
+    const daysDiff = Math.floor(now.diff(firstSeasonStart, 'days').days);
+    const seasonIndex = Math.floor(daysDiff % 16 / 4);
+    const seasons: Season[] = ['spring', 'summer', 'autumn', 'winter'];
+    const season = ref<Season>(seasons[seasonIndex]);
 
 
     const setSeason = (newSeason: Season) => {
         season.value = newSeason;
     };
 
-    const setIsScheduled = (value: boolean) => {
-        isScheduled.value = value;
-    };
-
-    const updateSeasonBySchedule = () => {
-        if (!isScheduled.value) return;
-
-        const now = DateTime.now().setZone('Europe/Moscow');
-        const startDate = DateTime.fromObject({ year: 2024, month: 6, day: 12 }, { zone: 'Europe/Moscow' });
-        const daysDiff = Math.floor(now.diff(startDate, 'days').days);
-        const seasonIndex = Math.floor(daysDiff / 16) % 4;
-        const seasons: Season[] = ['spring', 'summer', 'autumn', 'winter'];
-        season.value = seasons[seasonIndex];
-    };
-
     const generateSeasons = () => {
         const now = DateTime.now().setZone('Europe/Moscow').startOf('day');
-        const firstSeasonStart = DateTime.fromObject({ year: 2024, month: 6, day: 12 }, { zone: 'Europe/Moscow' });
         const daysSinceFirstSeason = Math.floor(now.diff(firstSeasonStart, 'days').days);
         const currentSeason = Math.floor(daysSinceFirstSeason / 16) % 4;
         const seasons: SeasonsListRaw[] = [
@@ -72,12 +60,10 @@ export const useSeasonStore = defineStore('season', () => {
         return generatedSeasons;
     };
 
+
     return {
         season,
-        isScheduled,
         setSeason,
-        setIsScheduled,
-        updateSeasonBySchedule,
         generateSeasons,
     };
 });
