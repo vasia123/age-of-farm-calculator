@@ -21,11 +21,11 @@ interface SeasonsList {
 export const useSeasonStore = defineStore('season', () => {
     const firstSeasonStart = DateTime.fromObject({ year: 2024, month: 6, day: 12 }, { zone: 'Europe/Moscow' });
     const now = DateTime.now().setZone('Europe/Moscow');
-    const daysDiff = Math.floor(now.diff(firstSeasonStart, 'days').days);
-    const seasonIndex = Math.floor(daysDiff % 16 / 4);
+    const daysSinceFirstSeason = Math.floor(now.diff(firstSeasonStart, 'days').days);
+    const currentSeasonIndex = Math.floor(daysSinceFirstSeason % 16 / 4);
     const seasons: Season[] = ['spring', 'summer', 'autumn', 'winter'];
-    const season = ref<Season>(seasons[seasonIndex]);
 
+    const season = ref<Season>(seasons[currentSeasonIndex]);
 
     const setSeason = (newSeason: Season) => {
         season.value = newSeason;
@@ -33,8 +33,6 @@ export const useSeasonStore = defineStore('season', () => {
 
     const generateSeasons = () => {
         const now = DateTime.now().setZone('Europe/Moscow').startOf('day');
-        const daysSinceFirstSeason = Math.floor(now.diff(firstSeasonStart, 'days').days);
-        const currentSeason = Math.floor(daysSinceFirstSeason / 16) % 4;
         const seasons: SeasonsListRaw[] = [
             { name: 'spring', label: 'seasonSpring', icon: '/age-of-farm-calculator/img/spring-icon.png' },
             { name: 'summer', label: 'seasonSummer', icon: '/age-of-farm-calculator/img/summer-icon.png' },
@@ -44,6 +42,8 @@ export const useSeasonStore = defineStore('season', () => {
 
         const generatedSeasons: SeasonsList[] = [];
         seasons.forEach((season, i) => {
+            const daysSinceFirstSeason = Math.floor(now.diff(firstSeasonStart, 'days').days);
+            const currentSeason = Math.floor(daysSinceFirstSeason / 16) % 4;
             const startDate = firstSeasonStart.plus({ days: (currentSeason + i) * 4 });
             const endDate = startDate.plus({ days: 4 });
             const active = now >= startDate && now < endDate;
