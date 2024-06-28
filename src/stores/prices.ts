@@ -18,16 +18,15 @@ export const usePricesStore = defineStore('prices', () => {
   const settingsStore = useSettingsStore();
   const chartStore = useChartStore();
 
-
   async function fetchPrices() {
     try {
       const response = await fetch('https://app.age-of-farm.site/api/floor?token=123');
       const data = await response.json();
       prices.value = {
-        wood: data.WOOD || chartStore.lastNonZeroPrices.wood,
-        food: data.FOOD || chartStore.lastNonZeroPrices.food,
-        stone: data.STONE || chartStore.lastNonZeroPrices.stone,
-        skin: data.SKIN || chartStore.lastNonZeroPrices.skin,
+        wood: data.WOOD && data.WOOD > 0 ? data.WOOD : chartStore.lastNonZeroPrices.wood,
+        food: data.FOOD && data.FOOD > 0 ? data.FOOD : chartStore.lastNonZeroPrices.food,
+        stone: data.STONE && data.STONE > 0 ? data.STONE : chartStore.lastNonZeroPrices.stone,
+        skin: data.SKIN && data.SKIN > 0 ? data.SKIN : chartStore.lastNonZeroPrices.skin,
       };
       priceTimeout = window.setTimeout(fetchPrices, 30 * 1000);
       saveResourcesPrices();

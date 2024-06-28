@@ -17,6 +17,10 @@
         <img class="mr-1" src="/img/stone.png" alt="Stone">
         <strong>{{ formatNumber(prices.stone) }}</strong>
       </div>
+      <div class="alert alert-light p-1 fw_topBox token_FWF">
+        <img class="mr-1" src="/img/skin.png" alt="Skin">
+        <strong>{{ formatNumber(prices.skin) }}</strong>
+      </div>
       <button @click="openChartModal" class="btn btn-primary">{{ $t('showCharts') }}</button>
     </div>
     <ul class="nav navbar-nav nav-flex-icons ml-auto">
