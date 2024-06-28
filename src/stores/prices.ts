@@ -9,6 +9,7 @@ export const usePricesStore = defineStore('prices', () => {
     wood: 0.00,
     food: 0.00,
     stone: 0.00,
+    skin: 0.00,
   });
   const tonPriceUsd = ref<number | string>('...');
   let priceTimeout: number;
@@ -17,13 +18,17 @@ export const usePricesStore = defineStore('prices', () => {
   const settingsStore = useSettingsStore();
   const chartStore = useChartStore();
 
+
   async function fetchPrices() {
     try {
       const response = await fetch('https://app.age-of-farm.site/api/floor?token=123');
       const data = await response.json();
-      if (data.WOOD) prices.value.wood = data.WOOD;
-      if (data.FOOD) prices.value.food = data.FOOD;
-      if (data.STONE) prices.value.stone = data.STONE;
+      prices.value = {
+        wood: data.WOOD || chartStore.lastNonZeroPrices.wood,
+        food: data.FOOD || chartStore.lastNonZeroPrices.food,
+        stone: data.STONE || chartStore.lastNonZeroPrices.stone,
+        skin: data.SKIN || chartStore.lastNonZeroPrices.skin,
+      };
       priceTimeout = window.setTimeout(fetchPrices, 30 * 1000);
       saveResourcesPrices();
     } catch (error) {
@@ -31,8 +36,14 @@ export const usePricesStore = defineStore('prices', () => {
     }
   }
 
+
   function getResourcePrice(resource: ResourceType): number {
-    return prices.value[resource] || 0;
+    const currentPrice = prices.value[resource];
+    if (currentPrice && currentPrice > 0) {
+      return currentPrice;
+    }
+    const lastNonZeroPrice = chartStore.lastNonZeroPrices[resource];
+    return lastNonZeroPrice > 0 ? lastNonZeroPrice : 0;
   }
 
   function setManualPrices() {
@@ -86,6 +97,7 @@ export const usePricesStore = defineStore('prices', () => {
       if (storedPrices.wood) prices.value.wood = storedPrices.wood;
       if (storedPrices.food) prices.value.food = storedPrices.food;
       if (storedPrices.stone) prices.value.stone = storedPrices.stone;
+      if (storedPrices.skin) prices.value.skin = storedPrices.skin;
     }
     fetchPrices();
 
@@ -102,14 +114,22 @@ export const usePricesStore = defineStore('prices', () => {
     window.clearTimeout(priceTimeout);
     window.clearInterval(priceTonTimeout);
   }
-
   function getPriceChangePercentage(resource: ResourceType): string {
     const currentPrice = prices.value[resource];
     const prevDayAveragePrice = chartStore.prevDayAveragePrices[resource];
-    if (prevDayAveragePrice === 0) {
+
+    // Проверяем, что обе цены существуют и не равны нулю
+    if (!currentPrice || !prevDayAveragePrice || prevDayAveragePrice === 0) {
       return '';
     }
+
     const changePercentage = ((currentPrice - prevDayAveragePrice) / prevDayAveragePrice) * 100;
+
+    // Проверяем, что результат является числом
+    if (isNaN(changePercentage)) {
+      return '';
+    }
+
     return changePercentage >= 0 ? `+${changePercentage.toFixed(1)}%` : `${changePercentage.toFixed(1)}%`;
   }
 

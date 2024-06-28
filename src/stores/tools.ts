@@ -299,11 +299,101 @@ export const useToolsStore = defineStore('tools', () => {
         stone: 18,
       },
     },
+    {
+      name: 'Bow (Common)',
+      icon: 'img/bow_common.png',
+      profit: 1,
+      chance: 0.8,
+      craft: {
+        wood: 650,
+        stone: 460,
+      },
+      cooldown: 1,
+      resource: 'skin',
+      energy: 5,
+      repair: {
+        wood: 1,
+        stone: 1,
+      },
+    },
+    {
+      name: 'Bow (Uncommon)',
+      icon: 'img/bow_uncommon.png',
+      profit: 1,
+      chance: 1.6,
+      craft: {
+        'Bow (Common)': 1,
+        wood: 630,
+        stone: 440,
+      },
+      cooldown: 1,
+      resource: 'skin',
+      energy: 10,
+      repair: {
+        wood: 2,
+        stone: 2,
+      },
+    },
+    {
+      name: 'Bow (Rare)',
+      icon: 'img/bow_rare.png',
+      profit: 1,
+      chance: 2.7,
+      craft: {
+        'Bow (Uncommon)': 1,
+        wood: 1300,
+        stone: 900,
+      },
+      cooldown: 1,
+      resource: 'skin',
+      energy: 20,
+      repair: {
+        wood: 4,
+        stone: 4,
+      },
+    },
+    {
+      name: 'Bow (Epic)',
+      icon: 'img/bow_epic.png',
+      profit: 1,
+      chance: 4.5,
+      craft: {
+        'Bow (Rare)': 1,
+        wood: 2650,
+        stone: 1850,
+      },
+      cooldown: 1,
+      resource: 'skin',
+      energy: 40,
+      repair: {
+        wood: 8,
+        stone: 8,
+      },
+    },
+    {
+      name: 'Bow (Legendary)',
+      icon: 'img/bow_legendary.png',
+      profit: 1,
+      chance: 7.2,
+      craft: {
+        'Bow (Epic)': 1,
+        wood: 5200,
+        stone: 3600,
+      },
+      cooldown: 1,
+      resource: 'skin',
+      energy: 80,
+      repair: {
+        wood: 16,
+        stone: 16,
+      },
+    },
   ]);
   const types: Record<ResourceType, Tool[]> = {
     wood: [],
     food: [],
     stone: [],
+    skin: [],
   };
   for (const tool of tools.value) {
     if (!types[tool.resource]) {
@@ -373,7 +463,8 @@ export const useToolsStore = defineStore('tools', () => {
   }
 
   function getToolHourlyProfit(tool: Tool): number {
-    const grossProfit = tool.profit * pricesStore.getResourcePrice(tool.resource);
+    const chance = tool.chance ? tool.chance / 100 : 1;
+    const grossProfit = tool.profit * pricesStore.getResourcePrice(tool.resource) * chance;
     const energyCost = getToolOneUseEnergyCost(tool);
     const durabilityCost = getToolOneUseDurabilityCost(tool);
     const netProfit = (grossProfit - energyCost - durabilityCost) / tool.cooldown;

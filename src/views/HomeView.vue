@@ -74,7 +74,6 @@ onMounted(() => {
   window.addEventListener('beforeunload', () => {
     window.clearTimeout(reloadTimeout);
   });
-  chartStore.loadPricesForThreeDays();
 });
 
 onUnmounted(() => {

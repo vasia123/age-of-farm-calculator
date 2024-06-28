@@ -40,6 +40,10 @@ export const useSummariesStore = defineStore('summaries', () => {
       profitSummary.stone -= consumptionSummary.stone;
       if (profitSummary.stone < 0) profitSummary.stone = 0;
     }
+    if (profitSummary.skin) {
+      profitSummary.skin -= consumptionSummary.skin;
+      if (profitSummary.skin < 0) profitSummary.skin = 0;
+    }
 
     return profitSummary;
   }
@@ -60,7 +64,8 @@ export const useSummariesStore = defineStore('summaries', () => {
     const consumptionSummary: { [key in ResourceType]: number } = {
       food: 0,
       stone: 0,
-      wood: 0
+      wood: 0,
+      skin: 0,
     };
 
     const account = accountsStore.accounts.find(acc => acc.id === accountId);
@@ -88,6 +93,10 @@ export const useSummariesStore = defineStore('summaries', () => {
     if (profitSummary.stone) {
       consumptionSummary.stone -= profitSummary.stone;
       if (consumptionSummary.stone < 0) consumptionSummary.stone = 0;
+    }
+    if (profitSummary.skin) {
+      consumptionSummary.skin -= profitSummary.skin;
+      if (consumptionSummary.skin < 0) consumptionSummary.skin = 0;
     }
 
     return consumptionSummary;

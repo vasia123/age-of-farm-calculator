@@ -108,7 +108,11 @@ const initChart = () => {
         if (sortedData.length === 0) {
             loadMoreData();
         } else {
-            seriesRefs.value[resource]?.setData(sortedData);
+            try {
+                seriesRefs.value[resource]?.setData(sortedData);
+            } catch (error) {
+                console.error(error)
+            }
         }
     }
 
@@ -128,7 +132,11 @@ const updateChart = () => {
         if (sortedData.length === 0) {
             loadMoreData();
         } else {
-            seriesRefs.value[resource]?.setData(sortedData);
+            try {
+                seriesRefs.value[resource]?.setData(sortedData);
+            } catch (error) {
+                console.error(error)
+            }
         }
     }
 };

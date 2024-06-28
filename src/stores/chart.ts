@@ -1,4 +1,4 @@
-import type { Prices, ResourceType } from '@/types/main';
+import type { Prices } from '@/types/main';
 import type { UTCTimestamp } from 'lightweight-charts';
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
@@ -15,6 +15,13 @@ export const useChartStore = defineStore('chart', () => {
     wood: 0.00,
     food: 0.00,
     stone: 0.00,
+    skin: 0.00,
+  });
+  const lastNonZeroPrices = ref<Prices>({
+    wood: 0.00,
+    food: 0.00,
+    stone: 0.00,
+    skin: 0.00,
   });
   const chartError = ref(false);
   const tomorrow = new Date();
@@ -82,6 +89,13 @@ export const useChartStore = defineStore('chart', () => {
     }))
   );
 
+  const skinData = computed(() =>
+    chartPrices.value.map(price => ({
+      time: new Date(price.date_create).getTime() / 1000 as UTCTimestamp,
+      value: parseFloat(price.SKIN)
+    }))
+  );
+
   async function fetchMoreData(): Promise<boolean> {
     const prevDate = new Date(currentDate.value);
     prevDate.setDate(prevDate.getDate() - 1);
@@ -113,19 +127,39 @@ export const useChartStore = defineStore('chart', () => {
 
     const pricesDataAll = await Promise.all(pricesPromises);
     const pricesData = pricesDataAll.filter(prices => prices.length > 0).sort(
-      (a, b) => new Date(a[0].date_create).getTime() - new Date(b[0].date_create).getTime()
+      (a, b) => new Date(b[0].date_create).getTime() - new Date(a[0].date_create).getTime()
     );
 
     if (pricesData.length > 0) {
-      const prevDayPrices = pricesData[pricesData.length - 1];
-      const resourceTypes: (ResourceType)[] = ['wood', 'food', 'stone'];
+      const resourceTypes: (keyof Prices)[] = ['wood', 'food', 'stone', 'skin'];
+
       resourceTypes.forEach(resource => {
-        const prices = prevDayPrices.map((item: any) => parseFloat(item[resource.toUpperCase()])).filter(price => price > 0);
+        const upperResource = resource.toUpperCase() as 'WOOD' | 'FOOD' | 'STONE' | 'SKIN';
+        for (const dayPrices of pricesData) {
+          for (let i = dayPrices.length - 1; i >= 0; i--) {
+            const price = parseFloat(dayPrices[i][upperResource]);
+            if (price > 0) {
+              lastNonZeroPrices.value[resource] = price;
+              break;
+            }
+          }
+          if (lastNonZeroPrices.value[resource] > 0) break;
+        }
+      });
+
+      const prevDayPrices = pricesData[pricesData.length - 1];
+      resourceTypes.forEach(resource => {
+        const upperResource = resource.toUpperCase() as 'WOOD' | 'FOOD' | 'STONE' | 'SKIN';
+        const prices = prevDayPrices.map(item => parseFloat(item[upperResource])).filter(price => price > 0);
         const averagePrice = prices.reduce((sum, price) => sum + price, 0) / prices.length;
         prevDayAveragePrices.value[resource] = averagePrice;
       });
     }
+
+    chartPrices.value = pricesData.flat();
   }
+
+  loadPricesForThreeDays();
 
   return {
     chartPrices,
@@ -136,7 +170,8 @@ export const useChartStore = defineStore('chart', () => {
     foodData,
     stoneData,
     woodData,
-    loadPricesForThreeDays,
+    skinData,
+    lastNonZeroPrices,
     fetchMoreData
   };
 });

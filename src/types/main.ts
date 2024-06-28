@@ -1,10 +1,11 @@
 
-export type ResourceType = 'wood' | 'food' | 'stone'
+export type ResourceType = 'wood' | 'food' | 'stone' | 'skin'
 
 export interface Tool {
     name: string;
     icon: string;
     profit: number;
+    chance?: number;
     craft: {
         wood: number;
         stone: number;

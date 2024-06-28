@@ -20,11 +20,23 @@
                 <img src="/img/stone.png" width="40px" height="40px" />
               </button>
             </div>
+            <div class="chart-buttons">
+              <button type="button" class="chart-button btn btn-link"
+                :class="{ 'chart-button-active': selectedResourcesType === 'skin' }"
+                @click="chooseResourcesGraph('skin')">
+                <img src="/img/skin.png" width="40px" height="40px" />
+              </button>
+            </div>
             <div class="chart-container" v-if="selectedResourcesType === 'simple'">
               <PriceChart :resources-data="{
                 FOOD: chartStore.foodData,
                 STONE: chartStore.stoneData,
                 WOOD: chartStore.woodData,
+              }" />
+            </div>
+            <div class="chart-container" v-if="selectedResourcesType === 'skin'">
+              <PriceChart :resources-data="{
+                SKIN: chartStore.skinData,
               }" />
             </div>
           </div>
@@ -49,14 +61,14 @@ const showModal = computed(() => modalsStore.showChartModal);
 const chartPrices = computed(() => chartStore.chartPrices);
 const chartError = computed(() => chartStore.chartError);
 
-const selectedResourcesType = ref<'simple' | 'factories' | ''>('');
+const selectedResourcesType = ref<'simple' | 'skin' | ''>('');
 
 
 function closeModal() {
   modalsStore.closeChartModal();
 }
 
-function chooseResourcesGraph(type: 'simple' | 'factories') {
+function chooseResourcesGraph(type: 'simple' | 'skin') {
   selectedResourcesType.value = type;
 }
 </script>
