@@ -24,7 +24,7 @@
                   <img :src="tool.icon" :alt="tool.name" class="mr-2" width="20px">
                 </td>
                 <td>
-                  {{ fn(tool.profit * 24) }}
+                  {{ fn(getToolProfit(tool)) }}
                   <img :src="'/age-of-farm-calculator/img/' + String(tool.resource).toLowerCase() + '.png'" width="20px"
                     class="mb-1" />
                 </td>
@@ -77,7 +77,7 @@
                 <td>
                   {{ $t('roi') }}: <span class="badge grey darken-2 sm ml-1">{{
                     summariesStore.getAccountROI(account.id).toFixed(1)
-                  }}</span>
+                    }}</span>
                   {{ $t('days') }}
                 </td>
               </tr>
@@ -121,7 +121,7 @@ import { useAccountsStore } from '@/stores/accounts';
 import { useSummariesStore } from '@/stores/summaries';
 import { useToolsStore } from '@/stores/tools';
 import { formatNumber } from '@/shared/utils';
-// import SeasonsToggle from '@/components/SeasonsToggle.vue'
+import type { Tool } from '@/types/main';
 
 const { t: $t } = useI18n();
 const accountsStore = useAccountsStore();
@@ -130,4 +130,8 @@ const toolsStore = useToolsStore();
 const fn = formatNumber;
 const accounts = computed(() => accountsStore.accounts);
 const energyMultiplyer = computed(() => toolsStore.energyMultiplyer);
+const getToolProfit = (tool: Tool) => {
+  const chance = tool.chance ? tool.chance / 100 : 1;
+  return tool.profit * 24 * chance;
+}
 </script>

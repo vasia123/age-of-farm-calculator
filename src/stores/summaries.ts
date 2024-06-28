@@ -14,7 +14,8 @@ export const useSummariesStore = defineStore('summaries', () => {
     const resourceSummary: Record<string, number> = {};
     account.tools.forEach(tool => {
       const resource = tool.resource;
-      const amount = tool.profit * 24;
+      const chance = tool.chance ? tool.chance / 100 : 1;
+      const amount = tool.profit * 24 * chance;
       if (amount > 0) {
         if (resource in resourceSummary) {
           resourceSummary[resource] += amount;
