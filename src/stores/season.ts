@@ -44,7 +44,8 @@ export const useSeasonStore = defineStore('season', () => {
         seasons.forEach((season, i) => {
             const daysSinceFirstSeason = Math.floor(now.diff(firstSeasonStart, 'days').days);
             const currentSeason = Math.floor(daysSinceFirstSeason % 16 / 4);
-            const startDate = firstSeasonStart.plus({ days: daysSinceFirstSeason + (currentSeason + i) * 4 });
+            const offset = Math.floor(daysSinceFirstSeason / 16) * 16;
+            const startDate = firstSeasonStart.plus({ days: offset + (currentSeason + i) * 4 });
             const endDate = startDate.plus({ days: 4 });
             const active = now >= startDate && now < endDate;
             generatedSeasons.push({
