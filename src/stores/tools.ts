@@ -389,19 +389,18 @@ export const useToolsStore = defineStore('tools', () => {
       },
     },
   ]);
-  const types: Record<ResourceType, Tool[]> = {
+  const toolsByType: Record<ResourceType, Tool[]> = {
     wood: [],
     food: [],
     stone: [],
     skin: [],
   };
   for (const tool of tools.value) {
-    if (!types[tool.resource]) {
-      types[tool.resource] = [];
+    if (!toolsByType[tool.resource]) {
+      toolsByType[tool.resource] = [];
     }
-    types[tool.resource].push(tool);
+    toolsByType[tool.resource].push(tool);
   }
-  const toolsByType = types;
 
   const pricesStore = usePricesStore();
 

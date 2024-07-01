@@ -73,6 +73,10 @@ const i18n = createI18n({
             nftPrice: "NFT Price",
             nft: "NFT",
             craft: "craft",
+
+            boostPercentage: "Production",
+            workers: "Workers",
+            tents: "tents",
         },
         ru: {
             title: "Калькулятор окупаемости",
@@ -141,6 +145,10 @@ const i18n = createI18n({
             nftPrice: "Цена нфт",
             nft: "NFT",
             craft: "крафт",
+
+            boostPercentage: "Добыча",
+            workers: "Рабочие",
+            tents: "палатки",
         },
     },
 });

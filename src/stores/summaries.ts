@@ -1,130 +1,83 @@
 import { defineStore } from 'pinia';
 import { useAccountsStore } from './accounts';
 import { useToolsStore } from './tools';
-import type { ResourceType } from '@/types/main';
+import type { ResourceType, Tool } from '@/types/main';
 
 export const useSummariesStore = defineStore('summaries', () => {
   const accountsStore = useAccountsStore();
   const toolsStore = useToolsStore();
 
-  function getAccountRawResourcesSummary(accountId: number): Record<string, number> {
+  function getAccountRawResourcesSummary(accountId: number): Record<ResourceType, number> {
     const account = accountsStore.accounts.find(acc => acc.id === accountId);
-    if (!account) return {};
+    if (!account) return {} as Record<ResourceType, number>;
 
-    const resourceSummary: Record<string, number> = {};
-    account.tools.forEach(tool => {
+    return account.tools.reduce((summary, tool) => {
       const resource = tool.resource;
       const chance = tool.chance ? tool.chance / 100 : 1;
       const amount = tool.profit * 24 * chance;
       if (amount > 0) {
-        if (resource in resourceSummary) {
-          resourceSummary[resource] += amount;
-        } else {
-          resourceSummary[resource] = amount;
-        }
+        summary[resource] = (summary[resource] || 0) + amount;
       }
-    });
-    return resourceSummary;
+      return summary;
+    }, {} as Record<ResourceType, number>);
   }
-  function getAccountResourcesSummary(accountId: number): Record<string, number> {
-    const consumptionSummary = getAccountRawDailConsumptionSummary(accountId)
-    const profitSummary = getAccountRawResourcesSummary(accountId)
-    if (profitSummary.wood) {
-      profitSummary.wood -= consumptionSummary.wood;
-      if (profitSummary.wood < 0) profitSummary.wood = 0;
-    }
-    if (profitSummary.food) {
-      profitSummary.food -= consumptionSummary.food;
-      if (profitSummary.food < 0) profitSummary.food = 0;
-    }
-    if (profitSummary.stone) {
-      profitSummary.stone -= consumptionSummary.stone;
-      if (profitSummary.stone < 0) profitSummary.stone = 0;
-    }
-    if (profitSummary.skin) {
-      profitSummary.skin -= consumptionSummary.skin;
-      if (profitSummary.skin < 0) profitSummary.skin = 0;
-    }
 
-    return profitSummary;
+  function getAccountRawDailyConsumptionSummary(accountId: number): Record<ResourceType, number> {
+    const account = accountsStore.accounts.find(acc => acc.id === accountId);
+    if (!account) return {} as Record<ResourceType, number>;
+
+    return account.tools.reduce((summary, tool) => {
+      summary.food += (tool.energy * toolsStore.energyMultiplyer / tool.cooldown / 5 * 24);
+      summary.stone += (tool.repair.stone / tool.cooldown * 24);
+      summary.wood += (tool.repair.wood / tool.cooldown * 24);
+      return summary;
+    }, { food: 0, stone: 0, wood: 0, skin: 0 } as Record<ResourceType, number>);
+  }
+
+  function calculateNetResourceSummary(profit: Record<ResourceType, number>, consumption: Record<ResourceType, number>): Record<ResourceType, number> {
+    const resources: ResourceType[] = ['wood', 'food', 'stone', 'skin'];
+    return resources.reduce((net, resource) => {
+      net[resource] = Math.max(0, (profit[resource] || 0) - (consumption[resource] || 0));
+      return net;
+    }, {} as Record<ResourceType, number>);
+  }
+
+  function getAccountResourcesSummary(accountId: number): Record<ResourceType, number> {
+    const profitSummary = getAccountRawResourcesSummary(accountId);
+    const consumptionSummary = getAccountRawDailyConsumptionSummary(accountId);
+    return calculateNetResourceSummary(profitSummary, consumptionSummary);
+  }
+
+  function getAccountDailyConsumptionSummary(accountId: number): Record<ResourceType, number> {
+    const profitSummary = getAccountRawResourcesSummary(accountId);
+    const consumptionSummary = getAccountRawDailyConsumptionSummary(accountId);
+    return calculateNetResourceSummary(consumptionSummary, profitSummary);
   }
 
   function getAccountDailyProfitSummary(accountId: number): number {
     const account = accountsStore.accounts.find(acc => acc.id === accountId);
     if (!account) return 0;
-    const toolsDailyProfit = account.tools.reduce((sum, tool) => {
-      const netProfit = toolsStore.getToolDailyProfit(tool);
-      return sum + netProfit;
-    }, 0);
-
-    return toolsDailyProfit;
-  }
-
-
-  function getAccountRawDailConsumptionSummary(accountId: number): { [key in ResourceType]: number } {
-    const consumptionSummary: { [key in ResourceType]: number } = {
-      food: 0,
-      stone: 0,
-      wood: 0,
-      skin: 0,
-    };
-
-    const account = accountsStore.accounts.find(acc => acc.id === accountId);
-    if (!account) return consumptionSummary;
-
-    account.tools.forEach(tool => {
-      consumptionSummary.food += tool.energy * toolsStore.energyMultiplyer / tool.cooldown / 5 * 24;
-      consumptionSummary.stone += tool.repair.stone / tool.cooldown * 24;
-      consumptionSummary.wood += tool.repair.wood / tool.cooldown * 24;
-    });
-    return consumptionSummary;
-  }
-
-  function getAccountDailyConsumptionSummary(accountId: number): { [key in ResourceType]: number } {
-    const consumptionSummary = getAccountRawDailConsumptionSummary(accountId)
-    const profitSummary = getAccountRawResourcesSummary(accountId)
-    if (profitSummary.wood) {
-      consumptionSummary.wood -= profitSummary.wood;
-      if (consumptionSummary.wood < 0) consumptionSummary.wood = 0;
-    }
-    if (profitSummary.food) {
-      consumptionSummary.food -= profitSummary.food;
-      if (consumptionSummary.food < 0) consumptionSummary.food = 0;
-    }
-    if (profitSummary.stone) {
-      consumptionSummary.stone -= profitSummary.stone;
-      if (consumptionSummary.stone < 0) consumptionSummary.stone = 0;
-    }
-    if (profitSummary.skin) {
-      consumptionSummary.skin -= profitSummary.skin;
-      if (consumptionSummary.skin < 0) consumptionSummary.skin = 0;
-    }
-
-    return consumptionSummary;
+    return account.tools.reduce((sum, tool) => sum + toolsStore.getToolDailyProfit(tool), 0);
   }
 
   function getAllProfitSummary(): number {
     return accountsStore.accounts.reduce(
-      (fullSum, account) => {
-        const toolsDailyProfit = account.tools.reduce((sum, tool) => {
-          const netProfit = toolsStore.getToolDailyProfit(tool);
-          return sum + netProfit;
-        }, 0);
-        return fullSum + toolsDailyProfit;
-      },
+      (fullSum, account) => fullSum + getAccountDailyProfitSummary(account.id),
       0
     );
   }
 
+  function calculateROI(investment: number, dailyProfit: number): number {
+    return dailyProfit > 0 ? investment / dailyProfit : 0;
+  }
+
   function getFullAccountROI(): number {
     const totalProfit = getAllProfitSummary();
-    if (totalProfit === 0) return 0;
     const totalInvestment = accountsStore.accounts.reduce(
-      (fullSum, account) => {
-        const toolsCraftPrice = account.tools.reduce((acc, tool) => acc + tool.craftPrice, 0)
-        return fullSum + toolsCraftPrice;
-      }, 0);
-    return totalInvestment / totalProfit;
+      (fullSum, account) => fullSum + account.tools.reduce((acc, tool) => acc + tool.craftPrice, 0),
+      0
+    );
+    return calculateROI(totalInvestment, totalProfit);
   }
 
   function getAccountROI(accountId: number): number {
@@ -132,9 +85,17 @@ export const useSummariesStore = defineStore('summaries', () => {
     if (!account) return 0;
 
     const totalProfit = getAccountDailyProfitSummary(accountId);
-    if (totalProfit === 0) return 0;
-    const toolsCraftPrice = account.tools.reduce((acc, tool) => acc + tool.craftPrice, 0)
-    return (toolsCraftPrice) / totalProfit;
+    const toolsCraftPrice = account.tools.reduce((acc, tool) => acc + tool.craftPrice, 0);
+    return calculateROI(toolsCraftPrice, totalProfit);
+  }
+
+  function getToolROI(tool: Tool, craftPrice: number): { hours: number; days: number } {
+    const dailyProfit = toolsStore.getToolDailyProfit(tool);
+    const roiDays = calculateROI(craftPrice, dailyProfit);
+    return {
+      days: roiDays,
+      hours: roiDays * 24
+    };
   }
 
   return {
@@ -144,5 +105,6 @@ export const useSummariesStore = defineStore('summaries', () => {
     getAllProfitSummary,
     getFullAccountROI,
     getAccountROI,
+    getToolROI,
   };
 });

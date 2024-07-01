@@ -64,6 +64,8 @@ export const useNftPricesStore = defineStore('nftPrices', () => {
     setInterval(loadItemPricesForThreeDays, 15 * 60 * 1000); // каждые 15 минут
   }
 
+  startPollingItemPrices();
+
   return {
     itemPrices,
     itemPricesError,

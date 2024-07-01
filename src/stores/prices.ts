@@ -39,10 +39,10 @@ export const usePricesStore = defineStore('prices', () => {
   function getResourcePrice(resource: ResourceType): number {
     const currentPrice = prices.value[resource];
     if (currentPrice && currentPrice > 0) {
-      return currentPrice;
+      return Number(currentPrice);
     }
     const lastNonZeroPrice = chartStore.lastNonZeroPrices[resource];
-    return lastNonZeroPrice > 0 ? lastNonZeroPrice : 0;
+    return lastNonZeroPrice > 0 ? Number(lastNonZeroPrice) : 0;
   }
 
   function setManualPrices() {
