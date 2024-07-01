@@ -20,17 +20,21 @@
             </div>
         </div>
         <div class="d-inline-block w-50 b-alcor">
-            <div v-for="(cost, resource) in building.craftCost" :key="resource" class="d-block fw_craft">
-                <div class="d-inline-block w-50 text-right">
-                    <span class="badge ssm no-shadow">{{ cost }}</span>
-                    <img :src="`/age-of-farm-calculator/img/${resource}.png`" style="height: 16px;">
+            <template v-for="resource in craftResources" :key="resource.icon">
+                <div class="d-block fw_craft" v-if="resource.cost > 0">
+                    <div class="d-inline-block w-50 text-right">
+                        <span class="badge ssm no-shadow" v-if="resource.count !== ''">
+                            {{ translateIfString(resource.count, $t) }}
+                        </span>
+                        <img :src="resource.icon" style="height: 16px;">
+                    </div>
+                    <div class="d-inline-block w-50 text-right">
+                        <span class="badge ssm no-shadow">
+                            {{ formatNumber(resource.cost) }}<i class="ton-icon"></i>
+                        </span>
+                    </div>
                 </div>
-                <div class="d-inline-block w-50 text-right">
-                    <span class="badge ssm no-shadow">
-                        {{ formatNumber(cost * getResourcePrice(resource)) }}<i class="ton-icon"></i>
-                    </span>
-                </div>
-            </div>
+            </template>
             <div class="d-block fw_craft">
                 <div class="d-inline-block w-50 text-right">
                     <span class="badge sm no-shadow">{{ $t('craftCost') }}:</span>
@@ -47,19 +51,17 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
-import { usePricesStore } from '@/stores/prices';
 import { useBuildingsStore, type Building } from '@/stores/buildings';
-import { formatNumber } from '@/shared/utils';
-import type { ResourceType } from '@/types/main';
+import { formatNumber, translateIfString } from '@/shared/utils';
+import { computed } from 'vue';
 
 const { t: $t } = useI18n();
-const pricesStore = usePricesStore();
 const buildingsStore = useBuildingsStore();
+const craftResources = computed(() => buildingsStore.getBuildingCraftResources(props.building));
 
-defineProps<{
+const props = defineProps<{
     building: Building;
 }>();
 
-const getResourcePrice = (resourceType: ResourceType) => pricesStore.getResourcePrice(resourceType);
 const getBuildingTotalCost = buildingsStore.getBuildingTotalCost;
 </script>

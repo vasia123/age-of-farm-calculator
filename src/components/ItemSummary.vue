@@ -30,7 +30,7 @@
                 <div class="d-block fw_craft" v-if="resource.cost > 0">
                     <div class="d-inline-block w-50 text-right">
                         <span class="badge ssm no-shadow" v-if="resource.count !== ''">
-                            {{ translateIfString(resource.count) }}
+                            {{ translateIfString(resource.count, $t) }}
                         </span>
                         <img :src="resource.icon" style="height: 16px;">
                     </div>
@@ -73,7 +73,7 @@ import { useI18n } from 'vue-i18n';
 import { useToolsStore } from '@/stores/tools';
 import { useNftPricesStore } from '@/stores/nft_prices';
 import { useSummariesStore } from '@/stores/summaries';
-import { formatNumber } from '@/shared/utils';
+import { formatNumber, translateIfString } from '@/shared/utils';
 
 const { t: $t } = useI18n();
 const toolsStore = useToolsStore();
@@ -101,12 +101,4 @@ const nftCollectionUrl = computed(() => {
 });
 
 
-const translateIfString = (stringOrNumber: string) => {
-    const parsedNumber = parseInt(stringOrNumber, 10);
-    if (parsedNumber.toString() === stringOrNumber) {
-        return stringOrNumber;
-    } else {
-        return $t(stringOrNumber);
-    }
-};
 </script>

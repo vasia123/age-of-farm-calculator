@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { ref, computed } from 'vue';
+import { computed, ref } from 'vue';
 import type { ResourceType } from '@/types/main';
 import { usePricesStore } from './prices';
 
@@ -8,10 +8,11 @@ export interface Building {
     icon: string;
     boost: number;
     additionalToolSlots: number;
-    craftCost: {
+    craft: {
         wood: number;
         stone: number;
         skin: number;
+        [key: string]: number;
     };
 }
 
@@ -24,7 +25,7 @@ export const useBuildingsStore = defineStore('buildings', () => {
             icon: '/age-of-farm-calculator/img/tent_common.png',
             boost: 10,
             additionalToolSlots: 1,
-            craftCost: {
+            craft: {
                 wood: 1600,
                 stone: 2000,
                 skin: 2,
@@ -35,7 +36,8 @@ export const useBuildingsStore = defineStore('buildings', () => {
             icon: '/age-of-farm-calculator/img/tent_uncommon.png',
             boost: 20,
             additionalToolSlots: 2,
-            craftCost: {
+            craft: {
+                'Common Tent': 1,
                 wood: 2400,
                 stone: 3000,
                 skin: 5,
@@ -46,22 +48,60 @@ export const useBuildingsStore = defineStore('buildings', () => {
             icon: '/age-of-farm-calculator/img/tent_rare.png',
             boost: 30,
             additionalToolSlots: 3,
-            craftCost: {
+            craft: {
+                'Uncommon Tent': 1,
                 wood: 3600,
                 stone: 4500,
-                skin: 9
+                skin: 9,
             }
         }
     ]);
 
-    const getBuildingTotalCost = computed(() => (building: Building) => {
-        return Object.entries(building.craftCost).reduce((total, [resource, amount]) => {
-            return total + amount * pricesStore.getResourcePrice(resource as ResourceType);
+    const getBuildingTotalCost = (building: Building): number => {
+        return Object.entries(building.craft).reduce((sum, [resourceOrTool, amount]) => {
+            if (Object.keys(pricesStore.prices).includes(resourceOrTool)) {
+                const resourceCost = pricesStore.getResourcePrice(resourceOrTool as ResourceType)
+                return amount * resourceCost + sum
+            } else {
+                const foundTool = buildings.value.find(t => t.name === resourceOrTool)
+                if (!foundTool) {
+                    return sum
+                }
+                return amount * getBuildingTotalCost(foundTool) + sum
+            }
         }, 0);
-    });
+    };
+
+    function getBuildingCraftResources(building: Building) {
+        return Object.keys(building.craft).map(resourceOrTool => {
+            if (Object.keys(pricesStore.prices).includes(resourceOrTool)) {
+                const resource = resourceOrTool as ResourceType
+                return {
+                    icon: `img/${resource}.png`,
+                    count: String(building.craft[resource]),
+                    cost: building.craft[resource] * pricesStore.getResourcePrice(resource)
+                }
+            }
+            const foundTool = buildings.value.find(t => t.name === resourceOrTool)
+            if (!foundTool) {
+                return {
+                    icon: ``,
+                    count: '',
+                    cost: 0
+                }
+            }
+            const toolCraftPrice = getBuildingTotalCost(foundTool)
+            return {
+                icon: foundTool.icon,
+                count: 1,
+                cost: toolCraftPrice
+            }
+        })
+    }
 
     return {
         buildings,
-        getBuildingTotalCost
+        getBuildingTotalCost,
+        getBuildingCraftResources,
     };
 });
