@@ -22,6 +22,7 @@
 
   <Footer />
   <AddToolModal />
+  <AddTentModal />
   <SettingsMenu />
   <PriceChartModal />
   <!-- <NewsModal /> -->
@@ -38,6 +39,7 @@ import AccountList from '@/components/AccountList.vue';
 import ToolTypeSummary from '@/components/ToolTypeSummary.vue';
 import Footer from '@/components/PageFooter.vue';
 import AddToolModal from '@/components/AddToolModal.vue';
+import AddTentModal from '@/components/AddTentModal.vue';
 import ProjectsLinks from '@/components/ProjectsLinks.vue';
 import SeasonsSlider from '@/components/SeasonsSlider.vue';
 // import NewsModal from '@/components/NewsModal.vue';

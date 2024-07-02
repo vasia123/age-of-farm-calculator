@@ -6,6 +6,7 @@ export const useModalsStore = defineStore('modals', () => {
   const showSettingsMenu = ref(false);
   const showChartModal = ref(false);
   const showStackPriceModal = ref(false);
+  const showAddTentModal = ref(false);
   const selectedAccountId = ref<number | null>(null);
 
   function openAddToolModal(accountId: number) {
@@ -16,6 +17,18 @@ export const useModalsStore = defineStore('modals', () => {
 
   function closeAddToolModal() {
     showAddToolModal.value = false;
+    document.body.classList.remove('modal-open');
+  }
+
+  function openAddTentModal(accountId: number) {
+    console.log('openAddTentModal')
+    showAddTentModal.value = true;
+    selectedAccountId.value = accountId;
+    document.body.classList.add('modal-open');
+  }
+
+  function closeAddTentModal() {
+    showAddTentModal.value = false;
     document.body.classList.remove('modal-open');
   }
 
@@ -61,5 +74,8 @@ export const useModalsStore = defineStore('modals', () => {
     closeChartModal,
     openStackPriceModal,
     closeStackPriceModal,
+    showAddTentModal,
+    openAddTentModal,
+    closeAddTentModal,
   };
 });

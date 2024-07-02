@@ -53,3 +53,28 @@ export interface NftPrices {
 }
 
 export type Season = 'spring' | 'summer' | 'autumn' | 'winter';
+
+export interface Tent {
+    name: string;
+    icon: string;
+    boost: number;
+    additionalToolSlots: number;
+    craft: {
+        wood: number;
+        stone: number;
+        skin: number;
+        [key: string]: number;
+    };
+}
+
+export interface CraftedTent extends Tent {
+    craftPrice: number;
+}
+
+export interface Account {
+    id: number;
+    name: string;
+    tools: CraftedTool[];
+    tents: CraftedTent[]; // Add this line
+    editing: boolean;
+}

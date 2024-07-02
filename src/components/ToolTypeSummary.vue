@@ -10,7 +10,7 @@
       </ResourceCard>
       <ResourceCard resource-type="tents" :resource-price="0" price-change="N/A" :is-resource="false">
         <template #default>
-          <TentSummary v-for="building in buildings" :key="building.name" :building="building" />
+          <TentSummary v-for="building in tents" :key="building.name" :tents="building" />
         </template>
       </ResourceCard>
     </div>
@@ -21,18 +21,18 @@
 import { computed } from 'vue';
 import { useToolsStore } from '@/stores/tools';
 import { usePricesStore } from '@/stores/prices';
-import { useBuildingsStore } from '@/stores/buildings';
 import type { ResourceType } from '@/types/main';
 import ResourceCard from '@/components/ResourceCard.vue';
 import ItemSummary from '@/components/ItemSummary.vue';
 import TentSummary from '@/components/TentSummary.vue';
+import { useTentsStore } from '@/stores/tents';
 
 const toolsStore = useToolsStore();
 const pricesStore = usePricesStore();
-const buildingsStore = useBuildingsStore();
+const buildingsStore = useTentsStore();
 
 const groupedItems = computed(() => toolsStore.toolsByType);
-const buildings = computed(() => buildingsStore.buildings);
+const tents = computed(() => buildingsStore.tents);
 
 const getResourcePrice = (resourceType: ResourceType) => pricesStore.getResourcePrice(resourceType);
 const getPriceChangePercentage = (resourceType: ResourceType) => pricesStore.getPriceChangePercentage(resourceType);
