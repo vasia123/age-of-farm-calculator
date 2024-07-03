@@ -405,21 +405,9 @@ export const useToolsStore = defineStore('tools', () => {
   const pricesStore = usePricesStore();
 
   function getToolCraftCost(tool: Tool): number {
-    return Object.keys(tool.craft).reduce(
-      (sum, resourceOrTool) => {
-        if (Object.keys(pricesStore.prices).includes(resourceOrTool)) {
-          const resourceCost = pricesStore.getResourcePrice(resourceOrTool as ResourceType)
-          return tool.craft[resourceOrTool] * resourceCost + sum
-        } else {
-          const foundTool = tools.value.find(t => t.name === resourceOrTool)
-          if (!foundTool) {
-            return sum
-          }
-          return tool.craft[resourceOrTool] * getToolCraftCost(foundTool) + sum
-        }
-      },
-      0
-    )
+    return getToolCraftResources(tool).reduce((sum, resourcePrice) => {
+      return sum + resourcePrice.cost
+    }, 0)
   }
 
   function getToolCraftResources(tool: Tool) {

@@ -23,7 +23,7 @@ import { useToolsStore } from '@/stores/tools';
 import { usePricesStore } from '@/stores/prices';
 import type { ResourceType } from '@/types/main';
 import ResourceCard from '@/components/ResourceCard.vue';
-import ItemSummary from '@/components/ItemSummary.vue';
+import ItemSummary from '@/components/ToolSummary.vue';
 import TentSummary from '@/components/TentSummary.vue';
 import { useTentsStore } from '@/stores/tents';
 
