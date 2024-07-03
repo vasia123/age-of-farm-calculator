@@ -81,7 +81,7 @@
                 <td>
                   {{ $t('roi') }}: <span class="badge grey darken-2 sm ml-1">{{
                     summariesStore.getAccountROI(account.id).toFixed(1)
-                  }}</span>
+                    }}</span>
                   {{ $t('days') }}
                 </td>
               </tr>
@@ -120,7 +120,10 @@
                   {{ fn(tent.craftPrice) }} <i class="ton-icon"></i>
                 </td>
                 <td>
-                  {{ fn(tentsStore.getTentROI(tent)) }} {{ $t('days') }}
+                  {{ $t('roi') }}: <span class="badge grey darken-2 sm ml-1">{{
+                    tentsStore.getTentROI(tent).toFixed(1)
+                    }}</span>
+                  {{ $t('days') }}
                 </td>
               </tr>
             </table>
