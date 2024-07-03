@@ -81,7 +81,7 @@
                 <td>
                   {{ $t('roi') }}: <span class="badge grey darken-2 sm ml-1">{{
                     summariesStore.getAccountROI(account.id).toFixed(1)
-                  }}</span>
+                    }}</span>
                   {{ $t('days') }}
                 </td>
               </tr>
@@ -95,7 +95,7 @@
               <tr>
                 <th>&nbsp;</th>
                 <th>{{ $t('boost') }}</th>
-                <th>{{ $t('additionalSlots') }}</th>
+                <th>{{ $t('production') }}</th>
                 <th>{{ $t('craftPriceShort') }}</th>
                 <th>{{ $t('roi') }}</th>
               </tr>
@@ -107,7 +107,13 @@
                   {{ tent.boost }}%
                 </td>
                 <td>
-                  {{ tent.additionalToolSlots }}
+                  <template v-for="(amount, resource) in summariesStore.getAccountResourcesSummary(account.id)"
+                    :key="resource">
+                    <div v-if="amount > 0" class="tool-costs-row">
+                      {{ fn(amount * 0.1) }}
+                      <img :src="'/age-of-farm-calculator/img/' + resource + '.png'" width="20px" class="mb-1" />
+                    </div>
+                  </template>
                 </td>
                 <td>
                   {{ fn(tent.craftPrice) }} <i class="ton-icon"></i>
