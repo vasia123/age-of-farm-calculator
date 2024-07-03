@@ -81,7 +81,7 @@
                 <td>
                   {{ $t('roi') }}: <span class="badge grey darken-2 sm ml-1">{{
                     summariesStore.getAccountROI(account.id).toFixed(1)
-                    }}</span>
+                  }}</span>
                   {{ $t('days') }}
                 </td>
               </tr>
@@ -104,7 +104,7 @@
                   <img :src="tent.icon" :alt="tent.name" class="mr-2" width="20px">
                 </td>
                 <td>
-                  <template v-for="(amount, resource) in summariesStore.getAccountResourcesSummary(account.id)"
+                  <template v-for="(amount, resource) in summariesStore.getAccountRawResourcesSummary(account.id)"
                     :key="resource">
                     <div v-if="amount > 0" class="tool-costs-row">
                       {{ fn(amount * tent.boost / 100) }}
@@ -113,8 +113,7 @@
                   </template>
                 </td>
                 <td>
-                  {{ fn(summariesStore.getAccountDailyProfitSummary(account.id) * tent.boost / 100) }} <i
-                    class="ton-icon"></i>
+                  {{ fn(getTentProfit(account, tent)) }} <i class="ton-icon"></i>
                 </td>
                 <td>
                   {{ fn(tent.craftPrice) }} <i class="ton-icon"></i>
@@ -122,7 +121,7 @@
                 <td>
                   {{ $t('roi') }}: <span class="badge grey darken-2 sm ml-1">{{
                     tentsStore.getTentROI(tent).toFixed(1)
-                    }}</span>
+                  }}</span>
                   {{ $t('days') }}
                 </td>
               </tr>
@@ -167,13 +166,15 @@ import { useSummariesStore } from '@/stores/summaries';
 import { useToolsStore } from '@/stores/tools';
 import { useTentsStore } from '@/stores/tents';
 import { formatNumber } from '@/shared/utils';
-import type { Tool } from '@/types/main';
+import type { Account, ResourceType, Tent, Tool } from '@/types/main';
+import { usePricesStore } from '@/stores/prices';
 
 const { t: $t } = useI18n();
 const accountsStore = useAccountsStore();
 const summariesStore = useSummariesStore();
 const toolsStore = useToolsStore();
 const tentsStore = useTentsStore();
+const pricesStore = usePricesStore();
 const fn = formatNumber;
 const accounts = computed(() => accountsStore.accounts);
 const energyMultiplyer = computed(() => toolsStore.energyMultiplyer);
@@ -183,15 +184,15 @@ const getToolProfit = (tool: Tool) => {
   return tool.profit * 24 * chance;
 }
 
-// Function to calculate total boost for an account
-// function getTotalBoost(account: Account): number {
-//   return account.tents.reduce((total, tent) => total + tent.boost, 0);
-// }
-
-// // Function to calculate total additional slots for an account
-// function getTotalAdditionalSlots(account: Account): number {
-//   return account.tents.reduce((total, tent) => total + tent.additionalToolSlots, 0) + 6;
-// }
+const getTentProfit = (account: Account, tent: Tent): number => {
+  const resources = summariesStore.calculateNetResourceSummary(
+    summariesStore.getAccountRawResourcesSummary(account.id),
+    {} as Record<ResourceType, number>
+  )
+  return Object.entries(resources).reduce((sum, [resource, amount]) => {
+    return sum + amount * pricesStore.getResourcePrice(resource as ResourceType) * tent.boost / 100
+  }, 0)
+}
 </script>
 
 

@@ -102,6 +102,8 @@ export const useSummariesStore = defineStore('summaries', () => {
     getAccountResourcesSummary,
     getAccountDailyProfitSummary,
     getAccountDailyConsumptionSummary,
+    getAccountRawResourcesSummary,
+    calculateNetResourceSummary,
     getAllProfitSummary,
     getFullAccountROI,
     getAccountROI,
