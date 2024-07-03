@@ -220,7 +220,6 @@ const getToolProfit = (tool: Tool) => {
 .tool-costs-row {
   display: flex;
   align-items: center;
-  margin-bottom: 4px;
 }
 
 .tool-costs-row img {
