@@ -97,7 +97,7 @@ const i18n = createI18n({
             description: "Рассчитайте окупаемость инструментов в Farm World",
             woodPrice: "Цена за единицу дерева",
             foodPrice: "Цена за единицу еды",
-            stonePrice: "Цена за единицу золота",
+            stonePrice: "Цена за единицу камня",
             fetchPrices: "Авто-обновление цен",
             manualPrices: "Ввести цены вручную",
             addTool: "Добавить инструмент",
