@@ -7,16 +7,18 @@ export const useSummariesStore = defineStore('summaries', () => {
   const accountsStore = useAccountsStore();
   const toolsStore = useToolsStore();
 
-  function getAccountRawResourcesSummary(accountId: number): Record<ResourceType, number> {
+  function getAccountRawResourcesSummary(accountId: number, exclude_tools: string[] = []): Record<ResourceType, number> {
     const account = accountsStore.accounts.find(acc => acc.id === accountId);
     if (!account) return {} as Record<ResourceType, number>;
 
     return account.tools.reduce((summary, tool) => {
-      const resource = tool.resource;
-      const chance = tool.chance ? tool.chance / 100 : 1;
-      const amount = tool.profit * 24 * chance;
-      if (amount > 0) {
-        summary[resource] = (summary[resource] || 0) + amount;
+      if (!exclude_tools.includes(tool.name)) {
+        const resource = tool.resource;
+        const chance = tool.chance ? tool.chance / 100 : 1;
+        const amount = tool.profit * 24 * chance;
+        if (amount > 0) {
+          summary[resource] = (summary[resource] || 0) + amount;
+        }
       }
       return summary;
     }, {} as Record<ResourceType, number>);

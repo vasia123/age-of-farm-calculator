@@ -104,7 +104,8 @@
                   <img :src="tent.icon" :alt="tent.name" class="mr-2" width="20px">
                 </td>
                 <td>
-                  <template v-for="(amount, resource) in summariesStore.getAccountRawResourcesSummary(account.id)"
+                  <template
+                    v-for="(amount, resource) in summariesStore.getAccountRawResourcesSummary(account.id, excludeBowsNames)"
                     :key="resource">
                     <div v-if="amount > 0" class="tool-costs-row">
                       {{ fn(amount * tent.boost / 100) }}
@@ -186,13 +187,21 @@ const getToolProfit = (tool: Tool) => {
 
 const getTentProfit = (account: Account, tent: Tent): number => {
   const resources = summariesStore.calculateNetResourceSummary(
-    summariesStore.getAccountRawResourcesSummary(account.id),
+    summariesStore.getAccountRawResourcesSummary(account.id, excludeBowsNames),
     {} as Record<ResourceType, number>
   )
   return Object.entries(resources).reduce((sum, [resource, amount]) => {
     return sum + amount * pricesStore.getResourcePrice(resource as ResourceType) * tent.boost / 100
   }, 0)
 }
+
+const excludeBowsNames = [
+  'Bow (Common)',
+  'Bow (Uncommon)',
+  'Bow (Rare)',
+  'Bow (Epic)',
+  'Bow (Legendary)',
+]
 </script>
 
 
