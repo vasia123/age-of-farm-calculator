@@ -458,7 +458,7 @@ export const useToolsStore = defineStore('tools', () => {
     return netProfit;
   }
   function getToolOneUseEnergyCost(tool: Tool): number {
-    return (tool.energy * energyMultiplyer.value / 5) * pricesStore.prices.food;
+    return (tool.energy * energyMultiplyer.value / 4) * pricesStore.prices.food;
   }
 
   function getToolDailyProfit(tool: Tool) {
