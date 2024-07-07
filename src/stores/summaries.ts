@@ -29,7 +29,7 @@ export const useSummariesStore = defineStore('summaries', () => {
     if (!account) return {} as Record<ResourceType, number>;
 
     return account.tools.reduce((summary, tool) => {
-      summary.food += (tool.energy * toolsStore.energyMultiplyer / tool.cooldown / 5 * 24);
+      summary.food += (tool.energy * toolsStore.energyMultiplyer / 4 / tool.cooldown * 24);
       summary.stone += (tool.repair.stone / tool.cooldown * 24);
       summary.wood += (tool.repair.wood / tool.cooldown * 24);
       return summary;
