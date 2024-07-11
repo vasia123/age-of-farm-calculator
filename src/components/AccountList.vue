@@ -81,7 +81,7 @@
                 <td>
                   {{ $t('roi') }}: <span class="badge grey darken-2 sm ml-1">{{
                     summariesStore.getAccountROI(account.id).toFixed(1)
-                    }}</span>
+                  }}</span>
                   {{ $t('days') }}
                 </td>
               </tr>
@@ -121,8 +121,8 @@
                 </td>
                 <td>
                   {{ $t('roi') }}: <span class="badge grey darken-2 sm ml-1">{{
-                    tentsStore.getTentROI(tent).toFixed(1)
-                    }}</span>
+                    getTentROI(account, tent).toFixed(1)
+                  }}</span>
                   {{ $t('days') }}
                 </td>
               </tr>
@@ -165,16 +165,14 @@ import { useI18n } from 'vue-i18n';
 import { useAccountsStore } from '@/stores/accounts';
 import { useSummariesStore } from '@/stores/summaries';
 import { useToolsStore } from '@/stores/tools';
-import { useTentsStore } from '@/stores/tents';
 import { formatNumber } from '@/shared/utils';
-import type { Account, ResourceType, Tent, Tool } from '@/types/main';
+import type { Account, CraftedTent, ResourceType, Tool } from '@/types/main';
 import { usePricesStore } from '@/stores/prices';
 
 const { t: $t } = useI18n();
 const accountsStore = useAccountsStore();
 const summariesStore = useSummariesStore();
 const toolsStore = useToolsStore();
-const tentsStore = useTentsStore();
 const pricesStore = usePricesStore();
 const fn = formatNumber;
 const accounts = computed(() => accountsStore.accounts);
@@ -185,7 +183,7 @@ const getToolProfit = (tool: Tool) => {
   return tool.profit * 24 * chance;
 }
 
-const getTentProfit = (account: Account, tent: Tent): number => {
+const getTentProfit = (account: Account, tent: CraftedTent): number => {
   const resources = summariesStore.calculateNetResourceSummary(
     summariesStore.getAccountRawResourcesSummary(account.id, excludeBowsNames),
     {} as Record<ResourceType, number>
@@ -194,6 +192,10 @@ const getTentProfit = (account: Account, tent: Tent): number => {
     return sum + amount * pricesStore.getResourcePrice(resource as ResourceType) * tent.boost / 100
   }, 0)
 }
+const getTentROI = (account: Account, tent: CraftedTent): number => {
+  return tent.craftPrice / getTentProfit(account, tent)
+}
+
 
 const excludeBowsNames = [
   'Bow (Common)',

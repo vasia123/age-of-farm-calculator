@@ -1,13 +1,11 @@
 // stores/tents.ts
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import type { Tent, CraftedTent, ResourceType } from '@/types/main';
+import type { Tent, ResourceType } from '@/types/main';
 import { usePricesStore } from './prices';
-import { useSummariesStore } from './summaries';
 
 export const useTentsStore = defineStore('tents', () => {
     const pricesStore = usePricesStore();
-    const summariesStore = useSummariesStore();
 
     const tents = ref<Tent[]>([
         {
@@ -62,15 +60,6 @@ export const useTentsStore = defineStore('tents', () => {
         }, 0);
     };
 
-    const getTentROI = (tent: CraftedTent): number => {
-        // Calculate daily profit increase due to boost
-        const boostMultiplier = 1 + (tent.boost / 100);
-        const dailyProfitIncrease = summariesStore.getAllProfitSummary() * (boostMultiplier - 1);
-
-        // Calculate ROI
-        return tent.craftPrice / dailyProfitIncrease;
-    };
-
     const getTentTotalCost = (tent: Tent): number => {
         return Object.entries(tent.craft).reduce((sum, [resourceOrTent, amount]) => {
             if (Object.keys(pricesStore.prices).includes(resourceOrTent)) {
@@ -116,7 +105,6 @@ export const useTentsStore = defineStore('tents', () => {
     return {
         tents,
         getTentCraftCost,
-        getTentROI,
         getTentTotalCost,
         getTentCraftResources,
     };
