@@ -35,7 +35,7 @@
                 </td>
                 <td>
                   <div v-if="tool.energy > 0" class="tool-costs-row">
-                    -{{ fn(tool.energy * getEnergyMultiplier(tool) / 4 * 24) }}
+                    -{{ fn(tool.energy * summariesStore.getEnergyMultiplier(tool) / 4 * 24) }}
                     <img src="/img/food.png" width="20px" class="mb-1" />
                   </div>
                   <div v-if="tool.repair.stone > 0" class="tool-costs-row">
@@ -194,17 +194,11 @@ const enhancementsStore = useEnhancementsStore();
 
 const fn = formatNumber;
 const accounts = computed(() => accountsStore.accounts);
-const energyMultiplyer = computed(() => toolsStore.energyMultiplyer);
 
 const getToolProfit = (tool: CraftedTool) => {
   const chance = tool.chance ? tool.chance / 100 : 1;
   const dogBoost = getDogBoost(tool);
   return tool.profit * 24 * chance * (1 + dogBoost / 100);
-}
-
-const getEnergyMultiplier = (tool: CraftedTool) => {
-  const clothingEnhancement = tool.enhancements?.find(e => e.type === 'clothing');
-  return clothingEnhancement ? 1 : energyMultiplyer.value;
 }
 
 const getTentProfit = (account: Account, tent: CraftedTent): number => {

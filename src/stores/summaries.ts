@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { useAccountsStore } from './accounts';
 import { useToolsStore } from './tools';
-import type { ResourceType, Tool } from '@/types/main';
+import type { CraftedTool, ResourceType, Tool } from '@/types/main';
 
 export const useSummariesStore = defineStore('summaries', () => {
   const accountsStore = useAccountsStore();
@@ -26,12 +26,18 @@ export const useSummariesStore = defineStore('summaries', () => {
     }, {} as Record<ResourceType, number>);
   }
 
+  const getEnergyMultiplier = (tool: CraftedTool) => {
+    const clothingEnhancement = tool.enhancements?.find(e => e.type === 'clothing');
+    return clothingEnhancement ? 1 : toolsStore.energyMultiplyer;
+  }
+
   function getAccountRawDailyConsumptionSummary(accountId: number): Record<ResourceType, number> {
     const account = accountsStore.accounts.find(acc => acc.id === accountId);
     if (!account) return {} as Record<ResourceType, number>;
 
     return account.tools.reduce((summary, tool) => {
-      summary.food += (tool.energy * toolsStore.energyMultiplyer / 4 / tool.cooldown * 24);
+      const energyMpy = getEnergyMultiplier(tool)
+      summary.food += (tool.energy * energyMpy / 4 / tool.cooldown * 24);
       summary.stone += (tool.repair.stone / tool.cooldown * 24);
       summary.wood += (tool.repair.wood / tool.cooldown * 24);
       return summary;
@@ -116,5 +122,6 @@ export const useSummariesStore = defineStore('summaries', () => {
     getFullAccountROI,
     getAccountROI,
     getToolROI,
+    getEnergyMultiplier,
   };
 });
