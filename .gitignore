@@ -28,3 +28,5 @@ coverage
 *.sw?
 
 *.tsbuildinfo
+vue_components_context.txt
+vue_stores_context.txt

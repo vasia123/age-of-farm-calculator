@@ -23,6 +23,7 @@
   <Footer />
   <AddToolModal />
   <AddTentModal />
+  <AddEnhancementModal />
   <SettingsMenu />
   <PriceChartModal />
   <!-- <NewsModal /> -->
@@ -47,6 +48,7 @@ import SettingsMenu from '@/components/SettingsMenu.vue';
 import PriceChartModal from '@/components/PriceChartModal.vue';
 import StackPriceCalculator from '@/components/StackPriceCalculator.vue';
 import { useChartStore } from '@/stores/chart';
+import AddEnhancementModal from '@/components/AddEnhancementModal.vue';
 
 const { t: $t } = useI18n();
 const accountsStore = useAccountsStore();

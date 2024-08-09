@@ -1,30 +1,16 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import type { Account, CraftedTent, CraftedTool } from '@/types/main';
+import type { Account, CraftedEnhancement, CraftedTent, CraftedTool, StoredAccount } from '@/types/main';
 import { useI18n } from 'vue-i18n';
 import { useToolsStore } from '@/stores/tools';
 import { useTentsStore } from '@/stores/tents';
-
-interface StoredTool {
-  name: string;
-  craftPrice: number;
-}
-
-interface StoredTent {
-  name: string;
-  craftPrice: number;
-}
-interface StoredAccount {
-  id: number;
-  name: string;
-  tools: StoredTool[];
-  tents: StoredTent[];
-}
+import { useEnhancementsStore } from '@/stores/enhancements';
 
 export const useAccountsStore = defineStore('accounts', () => {
   const accounts = ref<Account[]>([]);
   const toolsStore = useToolsStore();
   const tentsStore = useTentsStore();
+  const enhancementsStore = useEnhancementsStore();
   const { t: $t } = useI18n();
 
   function addAccount() {
@@ -44,6 +30,7 @@ export const useAccountsStore = defineStore('accounts', () => {
     accounts.value = accounts.value.filter(acc => acc.id !== accountId);
     saveAccounts();
   }
+
   function addTentToAccount(accountId: number, tent: CraftedTent) {
     const account = accounts.value.find(acc => acc.id === accountId);
     if (account) {
@@ -64,10 +51,29 @@ export const useAccountsStore = defineStore('accounts', () => {
     const zipAccounts: StoredAccount[] = accounts.value.map(acc => ({
       id: acc.id,
       name: acc.name,
-      tools: acc.tools.map(tool => ({ name: tool.name, craftPrice: tool.craftPrice })),
-      tents: acc.tents?.map(tent => ({ name: tent.name, craftPrice: tent.craftPrice })) || []
+      tools: acc.tools.map(tool => ({ name: tool.name, craftPrice: tool.craftPrice, enhancements: tool.enhancements })),
+      tents: acc.tents?.map(tent => ({ name: tent.name, craftPrice: tent.craftPrice })) || [],
     }))
     localStorage.setItem('accounts-age-of-farm', JSON.stringify(zipAccounts));
+  }
+
+  function addEnhancementToTool(accountId: number, toolIndex: number, enhancement: CraftedEnhancement) {
+    const account = accounts.value.find(acc => acc.id === accountId);
+    if (account && account.tools[toolIndex]) {
+      if (!account.tools[toolIndex].enhancements)
+        account.tools[toolIndex].enhancements = [];
+      account.tools[toolIndex].enhancements.push(enhancement);
+      saveAccounts();
+    }
+  }
+
+  function removeEnhancementFromTool(accountId: number, toolIndex: number, enhancement: CraftedEnhancement) {
+    const account = accounts.value.find(acc => acc.id === accountId);
+    if (account && account.tools[toolIndex]) {
+      const enhancements = account.tools[toolIndex].enhancements || [];
+      account.tools[toolIndex].enhancements = enhancements.filter(enh => enh.name !== enhancement.name);
+      saveAccounts();
+    }
   }
 
   function loadAccounts() {
@@ -79,10 +85,20 @@ export const useAccountsStore = defineStore('accounts', () => {
         rawAccounts.forEach(account => {
           const toolsRaw: Array<CraftedTool | undefined> = account.tools?.map(accountTool => {
             const toolFound = toolsStore.tools.find(tool => tool.name === accountTool.name)
-            if (!toolFound) return undefined
+            if (!toolFound) return undefined;
+            const enhancementsCrafted = accountTool.enhancements || [];
+            const enhancements = enhancementsCrafted.reduce((acc, enhCraft) => {
+              const enhancementFound = enhancementsStore.enhancements.find(enh => enh.name === enhCraft.name)
+              if (enhancementFound) acc.push({
+                ...enhancementFound,
+                craftPrice: enhCraft.craftPrice,
+              })
+              return acc;
+            }, [] as CraftedEnhancement[])
             return {
               ...toolFound,
               craftPrice: accountTool.craftPrice,
+              enhancements,
             };
           });
           const tentsRaw: Array<CraftedTent | undefined> = account.tents?.map(accountTent => {
@@ -99,7 +115,7 @@ export const useAccountsStore = defineStore('accounts', () => {
             tools: toolsRaw.filter(tool => tool !== undefined) as CraftedTool[],
             tents: tentsRaw?.filter(tent => tent !== undefined) as CraftedTent[] || [],
             editing: false,
-          })
+          });
         });
       }
     } else {
@@ -131,5 +147,7 @@ export const useAccountsStore = defineStore('accounts', () => {
     removeUserTool,
     addTentToAccount,
     removeTentFromAccount,
+    addEnhancementToTool,
+    removeEnhancementFromTool,
   };
 });

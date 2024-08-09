@@ -14,7 +14,9 @@ export const useSummariesStore = defineStore('summaries', () => {
     return account.tools.reduce((summary, tool) => {
       if (!exclude_tools.includes(tool.name)) {
         const resource = tool.resource;
-        const chance = tool.chance ? tool.chance / 100 : 1;
+        const haveDog = tool.enhancements?.find(enh => enh.type === 'dog')
+        const dogBoost = haveDog ? haveDog.boost : 0;
+        const chance = tool.chance ? (tool.chance / 100) * (1 + dogBoost / 100) : 1;
         const amount = tool.profit * 24 * chance;
         if (amount > 0) {
           summary[resource] = (summary[resource] || 0) + amount;
@@ -87,7 +89,11 @@ export const useSummariesStore = defineStore('summaries', () => {
     if (!account) return 0;
 
     const totalProfit = getAccountDailyProfitSummary(accountId);
-    const toolsCraftPrice = account.tools.reduce((acc, tool) => acc + tool.craftPrice, 0);
+    const toolsCraftPrice = account.tools.reduce((acc, tool) => {
+      acc += tool.craftPrice;
+      acc += tool.enhancements?.reduce((accEnh, enh) => accEnh + enh.craftPrice, 0) || 0;
+      return acc
+    }, 0);
     return calculateROI(toolsCraftPrice, totalProfit);
   }
 

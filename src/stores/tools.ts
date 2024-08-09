@@ -1,14 +1,18 @@
 import { defineStore } from 'pinia';
-import type { Tool, ResourceType } from '@/types/main';
+import type { Tool, ResourceType, CraftedTool } from '@/types/main';
 import { usePricesStore } from './prices';
 import { useSeasonStore } from '@/stores/season';
 import { computed, ref } from 'vue';
 import { useNftPricesStore } from '@/stores/nft_prices';
+import { useEnhancementsStore } from '@/stores/enhancements';
 
 
 export const useToolsStore = defineStore('tools', () => {
   const seasonStore = useSeasonStore();
   const nftPricesStore = useNftPricesStore();
+
+  const enhancementsStore = useEnhancementsStore();
+
 
   const energyMultiplyer = computed(
     () => seasonStore.season === 'winter' ? 3 : 1
@@ -449,25 +453,40 @@ export const useToolsStore = defineStore('tools', () => {
     return tool.repair.wood * pricesStore.prices.wood + tool.repair.stone * pricesStore.prices.stone;
   }
 
-  function getToolHourlyProfit(tool: Tool): number {
-    const chance = tool.chance ? tool.chance / 100 : 1;
+  function getToolHourlyProfit(tool: Tool | CraftedTool): number {
+    let dogBoost = 0
+    if ('enhancements' in tool) {
+      const haveDog = tool.enhancements?.find(enh => enh.type === 'dog')
+      dogBoost = haveDog ? haveDog.boost : 0;
+    }
+    const chance = tool.chance ? (tool.chance / 100) * (1 + dogBoost / 100) : 1;
     const grossProfit = tool.profit * pricesStore.getResourcePrice(tool.resource) * chance;
     const energyCost = getToolOneUseEnergyCost(tool);
     const durabilityCost = getToolOneUseDurabilityCost(tool);
     const netProfit = (grossProfit - energyCost - durabilityCost) / tool.cooldown;
     return netProfit;
   }
-  function getToolOneUseEnergyCost(tool: Tool): number {
+
+  function getToolOneUseEnergyCost(tool: Tool | CraftedTool): number {
+    if ('enhancements' in tool) {
+      const clothingEnhancement = tool.enhancements?.find(e => e.type === 'clothing');
+      if (clothingEnhancement) return (tool.energy / 4) * pricesStore.prices.food;
+    }
     return (tool.energy * energyMultiplyer.value / 4) * pricesStore.prices.food;
   }
 
-  function getToolDailyProfit(tool: Tool) {
+  function getToolDailyProfit(tool: Tool | CraftedTool) {
     return getToolHourlyProfit(tool) * 24;
   }
 
-  function getToolROI(tool: Tool, craftPrice: number): { hours: number; days: number } {
+  function getToolROI(tool: Tool | CraftedTool, craftPrice: number): { hours: number; days: number } {
+    const enhancementsCost = ('enhancements' in tool)
+      ? tool.enhancements?.reduce((acc, enh) => {
+        return acc + enhancementsStore.getEnhancementCraftCost(enh)
+      }, 0) || 0
+      : 0
     const hourlyProfit = getToolHourlyProfit(tool);
-    const roiHours = craftPrice / hourlyProfit;
+    const roiHours = (craftPrice + enhancementsCost) / hourlyProfit;
     const roiDays = roiHours / 24;
     return { hours: roiHours, days: roiDays };
   }

@@ -22,13 +22,7 @@ export interface Tool {
 
 export interface CraftedTool extends Tool {
     craftPrice: number;
-}
-
-export interface Account {
-    id: number;
-    name: string;
-    tools: CraftedTool[];
-    editing: boolean;
+    enhancements?: CraftedEnhancement[];
 }
 
 export type Prices = { [key in ResourceType]: number };
@@ -71,10 +65,60 @@ export interface CraftedTent extends Tent {
     craftPrice: number;
 }
 
+export type EnhancementType = 'dog' | 'clothing';
+
+export interface Enhancement {
+    name: string;
+    icon: string;
+    type: EnhancementType;
+    boost: number;
+    craftCost: {
+        food: number;
+        skin: number;
+    };
+    craftChance: number;
+}
+
+export interface CraftedEnhancement extends Enhancement {
+    craftPrice: number;
+}
+
+export interface StoredEnhancement {
+    name: string;
+    craftPrice: number;
+}
+
 export interface Account {
     id: number;
     name: string;
     tools: CraftedTool[];
-    tents: CraftedTent[]; // Add this line
+    tents: CraftedTent[];
     editing: boolean;
+}
+
+export interface CraftedTool extends Tool {
+    craftPrice: number;
+    enhancements?: CraftedEnhancement[];
+}
+
+export interface StoredTool {
+    name: string;
+    craftPrice: number;
+    enhancements?: StoredEnhancement[];
+}
+
+export interface StoredTent {
+    name: string;
+    craftPrice: number;
+}
+
+export interface StoredEnhancement {
+    name: string;
+    craftPrice: number;
+}
+export interface StoredAccount {
+    id: number;
+    name: string;
+    tools: StoredTool[];
+    tents: StoredTent[];
 }
