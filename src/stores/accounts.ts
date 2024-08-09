@@ -62,7 +62,7 @@ export const useAccountsStore = defineStore('accounts', () => {
     if (account && account.tools[toolIndex]) {
       if (!account.tools[toolIndex].enhancements)
         account.tools[toolIndex].enhancements = [];
-      account.tools[toolIndex].enhancements.push(enhancement);
+      account.tools[toolIndex].enhancements?.push(enhancement);
       saveAccounts();
     }
   }

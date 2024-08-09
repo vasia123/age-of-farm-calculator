@@ -40,11 +40,11 @@
                   </div>
                   <div v-if="tool.repair.stone > 0" class="tool-costs-row">
                     -{{ fn(tool.repair.stone * 24) }}
-                    <img src="/age-of-farm-calculator/img/stone.png" width="20px" class="mb-1" />
+                    <img src="/img/stone.png" width="20px" class="mb-1" />
                   </div>
                   <div v-if="tool.repair.wood > 0" class="tool-costs-row">
                     -{{ fn(tool.repair.wood * 24) }}
-                    <img src="/age-of-farm-calculator/img/wood.png" width="20px" class="mb-1" />
+                    <img src="/img/wood.png" width="20px" class="mb-1" />
                   </div>
                 </td>
                 <td>
@@ -93,7 +93,7 @@
                 <td colspan="2" class="text-center">
                   {{ $t('roi') }}: <span class="badge grey darken-2 sm ml-1">{{
                     getAccountROI(account).toFixed(1)
-                    }}</span>
+                  }}</span>
                   {{ $t('days') }}
                 </td>
               </tr>
@@ -133,7 +133,7 @@
                 <td>
                   {{ $t('roi') }}: <span class="badge grey darken-2 sm ml-1">{{
                     getTentROI(account, tent).toFixed(1)
-                    }}</span>
+                  }}</span>
                   {{ $t('days') }}
                 </td>
               </tr>
