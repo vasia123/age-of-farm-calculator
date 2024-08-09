@@ -273,7 +273,7 @@ const haveAvailbleEnhancements = (tool: CraftedTool) => {
 
 .tools-table th,
 .tools-table td {
-  padding: 1px 8px;
+  padding: 1px 4px;
   text-align: left;
 }
 
